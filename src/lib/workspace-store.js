@@ -37,12 +37,12 @@ export function createRequest(name = "New Request") {
     pinned: false,
     method: "GET",
     url: "",
-    queryParams: [createRow("param")],
-    headers: [createRow("header")],
+    queryParams: [],
+    headers: [],
     auth: { type: "none", token: "" },
     bodyType: "json",
     body: "",
-    bodyRows: [createRow("body")],
+    bodyRows: [],
     graphqlVariables: "{\n\n}",
     docs: "",
     activeEditorTab: "Params",
@@ -106,9 +106,9 @@ export function normalizeRequestRecord(request) {
   return {
     ...request,
     pinned: Boolean(request?.pinned),
-    queryParams: Array.isArray(request?.queryParams) ? request.queryParams : [createRow("param")],
-    headers: Array.isArray(request?.headers) ? request.headers : [createRow("header")],
-    bodyRows: Array.isArray(request?.bodyRows) ? request.bodyRows : [createRow("body")],
+    queryParams: Array.isArray(request?.queryParams) ? request.queryParams : [],
+    headers: Array.isArray(request?.headers) ? request.headers : [],
+    bodyRows: Array.isArray(request?.bodyRows) ? request.bodyRows : [],
     graphqlVariables: typeof request?.graphqlVariables === "string" ? request.graphqlVariables : "{\n\n}",
     auth: request?.auth && typeof request.auth === "object"
       ? { type: request.auth.type ?? "none", token: request.auth.token ?? "" }
