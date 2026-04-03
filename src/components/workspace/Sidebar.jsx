@@ -602,80 +602,6 @@ function RequestsView({
   );
 }
 
-function HistoryView({ workspaces, onSelectRequest, onClearAllHistory, onDeleteHistoryEntry }) {
-  const entries = useMemo(
-    () => workspaces
-      .flatMap((workspace) =>
-        (workspace.history ?? []).map((entry) => ({
-          ...entry,
-          workspaceId: workspace.id,
-          workspaceName: workspace.name
-        }))
-      )
-      .sort((left, right) => (right.savedAtTs ?? 0) - (left.savedAtTs ?? 0)),
-    [workspaces]
-  );
-
-  return (
-    <div className="min-h-0 space-y-3 overflow-hidden">
-      <div className="flex items-center justify-between gap-3">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">History</div>
-        {entries.length ? (
-          <button
-            type="button"
-            onClick={onClearAllHistory}
-            className="text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Clear all
-          </button>
-        ) : null}
-      </div>
-      <div className="thin-scrollbar overflow-auto pr-1">
-        {entries.length ? (
-          <div className="space-y-2">
-            {entries.map((entry) => (
-              <button
-                key={entry.id}
-                type="button"
-                onClick={() => onSelectRequest(entry.workspaceId, entry.requestId)}
-                className="group grid w-full gap-1 border border-border/30 bg-card/24 px-3 py-2 text-left hover:bg-accent/30"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="truncate text-[12px] font-medium text-foreground">{entry.requestName}</span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        onDeleteHistoryEntry(entry.workspaceId, entry.id);
-                      }}
-                      className="p-1 text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground group-hover:opacity-100"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                    <span className={cn("text-[10px] font-semibold uppercase tracking-[0.14em]", getMethodTone(entry.method).split(" ")[0])}>{entry.method}</span>
-                  </div>
-                </div>
-                <div className="flex min-w-0 items-center gap-2 text-[10px] tracking-[0.14em] text-muted-foreground">
-                  <span className="shrink-0 bg-secondary/45 px-1.5 py-0.5 text-foreground">{entry.workspaceName}</span>
-                  <span className="min-w-0 truncate normal-case">{formatHistoryUrl(entry.url)}</span>
-                </div>
-                <div className="flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
-                  <span>{entry.status} {entry.statusText}</span>
-                  <span>{entry.duration}</span>
-                </div>
-                <div className="text-[11px] text-muted-foreground">{entry.savedAt}</div>
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div className="border border-border/30 bg-card/24 p-3 text-[12px] text-muted-foreground">Run a request to start building local history.</div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export function Sidebar({
   iconSrc,
   sidebarTab,
@@ -693,9 +619,7 @@ export function Sidebar({
   onRenameRequest,
   onDeleteRequest,
   onDuplicateRequest,
-  onTogglePinRequest,
-  onClearAllHistory,
-  onDeleteHistoryEntry
+  onTogglePinRequest
 }) {
   return (
     <aside
@@ -711,38 +635,26 @@ export function Sidebar({
         <Button variant={sidebarTab === "requests" ? "secondary" : "ghost"} size="icon" className="h-8 w-8" onClick={() => onSidebarTabChange("requests")}>
           <FolderKanban className="h-4 w-4" />
         </Button>
-        <Button variant={sidebarTab === "history" ? "secondary" : "ghost"} size="icon" className="h-8 w-8" onClick={() => onSidebarTabChange("history")}>
-          <History className="h-4 w-4" />
-        </Button>
         <div className="mt-auto" />
       </Card>
 
       {!collapsed ? (
         <Card className="flex min-h-0 flex-col gap-3 overflow-hidden bg-[hsl(var(--sidebar))]/98 px-4 py-3 text-[12px] text-[hsl(var(--sidebar-foreground))] shadow-none">
-          {sidebarTab === "requests" ? (
-            <RequestsView
-              workspaces={workspaces}
-              activeWorkspaceId={activeWorkspaceId}
-              activeRequestId={activeRequestId}
-              onSelectWorkspace={onSelectWorkspace}
-              onSelectRequest={onSelectRequest}
-              onCreateWorkspace={onCreateWorkspace}
-              onCreateRequest={onCreateRequest}
-              onRenameWorkspace={onRenameWorkspace}
-              onDeleteWorkspace={onDeleteWorkspace}
-              onRenameRequest={onRenameRequest}
-              onDeleteRequest={onDeleteRequest}
-              onDuplicateRequest={onDuplicateRequest}
-              onTogglePinRequest={onTogglePinRequest}
-            />
-          ) : (
-            <HistoryView
-              workspaces={workspaces}
-              onSelectRequest={onSelectRequest}
-              onClearAllHistory={onClearAllHistory}
-              onDeleteHistoryEntry={onDeleteHistoryEntry}
-            />
-          )}
+          <RequestsView
+            workspaces={workspaces}
+            activeWorkspaceId={activeWorkspaceId}
+            activeRequestId={activeRequestId}
+            onSelectWorkspace={onSelectWorkspace}
+            onSelectRequest={onSelectRequest}
+            onCreateWorkspace={onCreateWorkspace}
+            onCreateRequest={onCreateRequest}
+            onRenameWorkspace={onRenameWorkspace}
+            onDeleteWorkspace={onDeleteWorkspace}
+            onRenameRequest={onRenameRequest}
+            onDeleteRequest={onDeleteRequest}
+            onDuplicateRequest={onDuplicateRequest}
+            onTogglePinRequest={onTogglePinRequest}
+          />
         </Card>
       ) : null}
     </aside>
