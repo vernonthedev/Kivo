@@ -47,13 +47,16 @@ jobs:
         with:
           tagName: ${{ github.ref_name }}
           releaseName: "Kivo ${{ github.ref_name }}"
+          includeUpdaterJson: true
+          updaterJsonPreferNsis: true
           releaseBody: |
 
-            ### This release introduces Native Auto-Updates.
+            ### Hotfix: Native Auto-Updater
 
-            - **New**: Auto Updater. Kivo now automatically checks for, silently downloads, and prepares updates in the background, minimizing disruptions.
-            - **New**: Seamless Upgrades. You can now restart and apply updates whenever you are ready via a clean Toast notification or directly from the Collection Settings panel.
-            - **Security**: Signed Binaries. All updates are now distributed and verified utilizing Tauri's cryptographically secure signatures.
+            - **Fixed**: Corrected a CI publishing issue where `latest.json` was missing from release artifacts. Auto-updates will operate flawlessly from v0.3.3 onwards.
+            - **New**: Backports the Auto-Updater. Kivo now automatically checks for, silently downloads, and prepares updates under the hood.
+            - **New**: Seamless Upgrades UI. Apply downloaded updates instantly via a Toast notification or manually check inside Collection Settings.
+            - **Security**: Signed Binaries. Cryptographically secure Tauri signatures are exclusively utilized.
 
             - **Full Changelog**: [View CHANGELOG.md](https://github.com/dexter-xD/Kivo/blob/main/CHANGELOG.md)
           projectPath: desktop
