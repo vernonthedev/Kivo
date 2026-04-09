@@ -136,6 +136,11 @@
   #root {
     @apply h-full overflow-hidden;
   }
+
+  /* macOS transparent titlebar — only applies when body has .macos class */
+  body.macos #root {
+    padding-top: 28px;
+  }
 }
 
 @layer utilities {
@@ -296,5 +301,16 @@
 
   .thin-scrollbar::-webkit-scrollbar-corner {
     background: transparent;
+  }
+
+  /* macOS window drag region — makes the marked area draggable */
+  [data-tauri-drag-region] {
+    -webkit-app-region: drag;
+  }
+
+  [data-tauri-drag-region] button,
+  [data-tauri-drag-region] input,
+  [data-tauri-drag-region] a {
+    -webkit-app-region: no-drag;
   }
 }

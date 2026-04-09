@@ -97,6 +97,12 @@ export default function App() {
   }, [store?.storagePath]);
   const storagePath = resolvedPath;
 
+  useEffect(() => {
+    if (/Macintosh/.test(navigator.userAgent)) {
+      document.body.classList.add("macos");
+    }
+  }, []);
+
   const { vars: envVars, refresh: refreshEnvVars } = useEnv(activeWorkspace?.name, activeCollection?.name);
 
   function handleSelectRequest(workspaceName, collectionName, requestName) {
@@ -221,7 +227,7 @@ export default function App() {
 
             <>
               { }
-              <div className="flex shrink-0 items-center justify-between border-b border-border/25 bg-background/40 px-5 py-3 backdrop-blur-md">
+              <div data-tauri-drag-region className="flex shrink-0 items-center justify-between border-b border-border/25 bg-background/40 px-5 py-3 backdrop-blur-md">
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                   <div className="text-[17px] font-semibold tracking-tight text-foreground truncate">
                     {activeCollection?.name ?? "Collection"}
@@ -278,7 +284,7 @@ export default function App() {
           ) : showWorkspaceView ? (
 
             <>
-              <div className="flex shrink-0 items-center justify-between border-b border-border/25 bg-background/40 px-5 py-3.5 backdrop-blur-md">
+              <div data-tauri-drag-region className="flex shrink-0 items-center justify-between border-b border-border/25 bg-background/40 px-5 py-3.5 backdrop-blur-md">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-3">
                     <div className="text-[18px] font-semibold tracking-tight text-foreground">
