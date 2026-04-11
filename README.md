@@ -63,7 +63,7 @@ Get the latest stable version for your operating system:
 
 ---
 
-## Getting Started
+## Build from Source
 
 ### Prerequisites
 
@@ -98,13 +98,6 @@ pnpm build
 ```
 
 The installer will be generated in the `desktop/target/release/bundle` directory.
-
-## Usage
-
-1. Create a Workspace: Start by creating a workspace to organize your related API requests
-2. Add Requests: Create new requests within your workspace or duplicate existing ones
-3. Configure: Set the URL, HTTP method, headers, and body parameters
-4. Send & Inspect: Click Send to execute the request and view detailed response data including headers, cookies, and timing
 
 ## Contributing
 
