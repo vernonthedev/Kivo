@@ -18,6 +18,22 @@
 
 Kivo is a lightweight cross-platform HTTP client designed for developers who value speed and simplicity. It provides a clean, distraction-free environment for testing APIs and managing request collections without the bloat of traditional tools.
 
+## 📥 Download Kivo (v0.3.4)
+
+Get the latest stable version for your operating system:
+
+| Platform | Installer | Architecture |
+| :--- | :--- | :--- |
+| **Windows** | [Download .exe](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo_0.3.4_x64-setup.exe) / [.msi](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo_0.3.4_x64_en-US.msi) | `x64` |
+| **macOS** | [Apple Silicon .dmg](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo_0.3.4_aarch64.dmg) | `arm64` |
+| **macOS** | [Intel .dmg](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo_0.3.4_x64.dmg) | `x64` |
+| **Linux** | [Download .deb](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo_0.3.4_amd64.deb) | `x64` |
+| **Linux** | [Download .rpm](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo-0.3.4-1.x86_64.rpm) | `x64` |
+
+*For other formats and old releases, visit the [Releases page](https://github.com/dexter-xD/Kivo/releases).*
+
+---
+
 ## Features
 
 - Native Performance: Built with Rust and Tauri for minimal resource usage and fast startup times across Windows, macOS, and Linux
