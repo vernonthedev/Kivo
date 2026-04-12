@@ -32,17 +32,17 @@ Kivo is a lightweight cross-platform HTTP client designed for developers who val
 - Self-Updating: Built-in background auto-updater with signature verification guarantees you're always on the latest version.
 - Security: Local-first data storage ensuring your request data stays on your machine
 
-## Download Kivo (v0.3.4)
+## Download Kivo (v0.3.5)
 
 Get the latest stable version for your operating system:
 
 | Platform | Installer | Architecture |
 | :--- | :--- | :--- |
-| **Windows** | [Download .exe](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo_0.3.4_x64-setup.exe) / [.msi](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo_0.3.4_x64_en-US.msi) | `x64` |
-| **macOS** | [Apple Silicon .dmg](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo_0.3.4_aarch64.dmg) | `arm64` |
-| **macOS** | [Intel .dmg](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo_0.3.4_x64.dmg) | `x64` |
-| **Linux** | [Download .deb](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo_0.3.4_amd64.deb) | `x64` |
-| **Linux** | [Download .rpm](https://github.com/dexter-xD/Kivo/releases/download/v0.3.4/Kivo-0.3.4-1.x86_64.rpm) | `x64` |
+| **Windows** | [Download .exe](https://github.com/dexter-xD/Kivo/releases/download/v0.3.5/Kivo_0.3.5_x64-setup.exe) / [.msi](https://github.com/dexter-xD/Kivo/releases/download/v0.3.5/Kivo_0.3.5_x64_en-US.msi) | `x64` |
+| **macOS** | [Apple Silicon .dmg](https://github.com/dexter-xD/Kivo/releases/download/v0.3.5/Kivo_0.3.5_aarch64.dmg) | `arm64` |
+| **macOS** | [Intel .dmg](https://github.com/dexter-xD/Kivo/releases/download/v0.3.5/Kivo_0.3.5_x64.dmg) | `x64` |
+| **Linux** | [Download .deb](https://github.com/dexter-xD/Kivo/releases/download/v0.3.5/Kivo_0.3.5_amd64.deb) | `x64` |
+| **Linux** | [Download .rpm](https://github.com/dexter-xD/Kivo/releases/download/v0.3.5/Kivo-0.3.5-1.x86_64.rpm) | `x64` |
 
 *For other formats and old releases, visit the [Releases page](https://github.com/dexter-xD/Kivo/releases).*
 
@@ -50,15 +50,15 @@ Get the latest stable version for your operating system:
 
 - **Debian / Ubuntu**:
   ```bash
-  sudo apt install ./Kivo_0.3.4_amd64.deb
+  sudo apt install ./Kivo_0.3.5_amd64.deb
   ```
 - **Fedora / RHEL**:
   ```bash
-  sudo dnf install ./Kivo-0.3.4-1.x86_64.rpm
+  sudo dnf install ./Kivo-0.3.5-1.x86_64.rpm
   ```
 - **Arch / Other (RPM via rpm tool)**:
   ```bash
-  sudo rpm -i --nodeps --nosignature ./Kivo-0.3.4-1.x86_64.rpm
+  sudo rpm -i --nodeps --nosignature ./Kivo-0.3.5-1.x86_64.rpm
   ```
 
 ---
@@ -111,7 +111,13 @@ Contributions are welcome! If you have suggestions for improvements or encounter
 
 ## Changelog
 
-### v0.3.4 (2026-04-12)
+### v0.3.5 (2026-04-12)
+
+- **Cross-Platform Storage Fixes**. Improved default storage path logic for macOS and Linux with robust fallbacks.
+- **Smart Setup Wizard**. Added a subfolder creation toggle and automatic directory detection to prevent data nesting.
+- **Native Experience Refinement**. Smarter path separator handling and dynamic placeholders based on detected OS.
+
+### v0.3.4 (2026-04-11)
 
 - **macOS Support**. Added native builds for both Apple Silicon (`aarch64`) and Intel (`x86_64`) Macs with a premium transparent titlebar experience.
 - **Linux RPM Expansion**. Added support for `.rpm` packages, bringing Kivo to Fedora, RHEL, openSUSE, and more.

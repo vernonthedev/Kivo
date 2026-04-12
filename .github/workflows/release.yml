@@ -64,12 +64,12 @@ jobs:
           generateReleaseNotes: true
           args: ${{ matrix.args }}
           releaseBody: |
-            ### v0.3.4: macOS & Linux RPM Support
+            ### v0.3.5: Cross-Platform Storage & Smart Setup
 
-            - **macOS Support**: Native DMG and App bundles for both Apple Silicon and Intel Macs.
-            - **Native UX**: Transparent titlebar with overlay traffic lights and drag-region support for a better macOS experience.
-            - **Linux Expansion**: Added `.rpm` package support alongside `.deb` for broader Linux compatibility.
-            - **CI/CD**: Fully automated release pipeline for Windows, Linux (DEB/RPM), and macOS (DMG).
+            - **feat**: Improved default storage paths for macOS and Linux (Documents → Home → AppData).
+            - **feat**: New "Create Kivo Subfolder" toggle with auto-detection to prevent nested data.
+            - **feat**: Smarter path separator handling and dynamic placeholders based on detected OS.
+            - **fix**: Absolute path detection now uses `Path::is_absolute()` for better reliability.
           projectPath: desktop
 
       - name: Update CHANGELOG.md
