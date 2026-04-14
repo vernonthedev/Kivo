@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { getVersion } from "@tauri-apps/api/app";
-import { RefreshCw, X } from "lucide-react";
+import { Info, RefreshCw, X, AlertCircle, CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button.jsx";
 import { cn } from "@/lib/utils.js";
@@ -22,6 +22,24 @@ export function Updater() {
 
     return () => window.removeEventListener("manual-update-check", handleManualCheck);
   }, []);
+
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("updater-status-change", { detail: { status, updateInfo } }));
+    
+    const handleStatusRequest = () => {
+      window.dispatchEvent(new CustomEvent("updater-status-change", { detail: { status, updateInfo } }));
+    };
+    const handleManualInstall = () => {
+      if (status === "available") handleInstallAndRestart();
+    };
+
+    window.addEventListener("updater-status-request", handleStatusRequest);
+    window.addEventListener("manual-update-install", handleManualInstall);
+    return () => {
+      window.removeEventListener("updater-status-request", handleStatusRequest);
+      window.removeEventListener("manual-update-install", handleManualInstall);
+    };
+  }, [status, updateInfo]);
 
   async function checkForUpdates(isManual) {
     if (status === "downloading" || status === "available") return;
@@ -73,50 +91,50 @@ export function Updater() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 panel-surface flex flex-col gap-3 rounded-sm p-5 shadow-2xl min-w-[340px] animate-in slide-in-from-right-5 fade-in duration-500">
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-2.5 text-foreground font-semibold tracking-tight">
-          <div className={cn(
-            "flex h-8 w-8 items-center justify-center rounded-sm transition-colors border border-border/10",
-            status === "downloading" ? "bg-primary/10 text-primary" :
-              status === "error" ? "bg-red-500/10 text-red-500" :
-                status === "up-to-date" ? "bg-emerald-500/10 text-emerald-400" : "bg-primary/10 text-primary"
-          )}>
-            <RefreshCw className={cn("h-4 w-4", status === "downloading" && "animate-spin")} />
-          </div>
-          <span className="text-[14px]">
-            {status === "downloading" ? "Applying Update..." :
-              status === "available" ? "Update Available" :
-                status === "error" ? "Update Failed" : "Up to Date"}
+    <div className="fixed bottom-6 right-6 z-50 panel-surface flex flex-col gap-3.5 rounded-sm p-3.5 shadow-2xl min-w-[340px] max-w-[380px] animate-in slide-in-from-right-5 fade-in duration-500 border border-border/40">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start gap-2.5 mt-0.5">
+          {status === "downloading" ? (
+            <RefreshCw className="h-4 w-4 text-teal-500 animate-spin shrink-0 mt-0.5" />
+          ) : status === "error" ? (
+            <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+          ) : status === "up-to-date" ? (
+            <CheckCircle2 className="h-4 w-4 text-teal-500 shrink-0 mt-0.5" />
+          ) : (
+            <Info className="h-4 w-4 text-teal-500 shrink-0 mt-0.5" />
+          )}
+          
+          <span className="text-[13px] leading-relaxed text-foreground/90 font-medium tracking-wide">
+            {status === "downloading" ? "Downloading and installing update..." :
+              status === "error" ? errorMsg :
+                status === "up-to-date" ? `Kivo is up to date (v${currentVersion}).` :
+                  "Restart Kivo to apply the latest update."}
           </span>
         </div>
+        
         {status !== "downloading" && (
-          <button onClick={() => setStatus("idle")} className="text-muted-foreground hover:bg-accent/40 hover:text-foreground h-7 w-7 flex items-center justify-center rounded-sm transition-all focus-visible:outline-none">
+          <button onClick={() => setStatus("idle")} className="shrink-0 text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none">
             <X className="h-4 w-4" />
           </button>
         )}
       </div>
 
-      <div className="text-[12.5px] text-muted-foreground leading-relaxed px-0.5">
-        {status === "downloading" && `Downloading and installing version ${updateInfo?.version}...`}
-        {status === "available" && (
-          <div className="space-y-1">
-            <p>Restart Kivo to apply the new changes.</p>
-            <p className="text-[11px] font-medium opacity-60">Currently on v{currentVersion} → New version: <span className="font-bold text-foreground">{updateInfo?.version}</span></p>
-          </div>
-        )}
-        {status === "error" && <p className="text-red-500/90 font-medium">{errorMsg}</p>}
-        {status === "up-to-date" && <p>You are on the latest version <span className="text-foreground font-medium">v{currentVersion}</span>. Everything is looking good!</p>}
-      </div>
-
       {status === "available" && (
-        <div className="flex justify-end gap-2 mt-1 pt-3 border-t border-border/15">
-          <Button variant="ghost" size="sm" className="h-8 rounded-sm text-[11.5px] px-3 font-medium hover:bg-accent/40 transition-colors" onClick={() => {}}>
-            Release Notes
+        <div className="flex justify-end gap-2 mt-1">
+          <Button 
+            size="sm" 
+            className="h-7 px-3 text-[12px] bg-teal-500/20 hover:bg-teal-500/30 text-teal-500 font-medium rounded shadow-none border-0" 
+            onClick={handleInstallAndRestart}
+          >
+            Update Now
           </Button>
-          <Button size="sm" className="h-8 rounded-sm text-[11.5px] px-4 gap-2 shadow-md active:scale-95 transition-transform font-semibold font-mono" onClick={handleInstallAndRestart}>
-            <RefreshCw className="h-3 w-3" />
-            Restart
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="h-7 px-3 text-[12px] font-medium rounded bg-accent/60 hover:bg-accent border-0 shadow-none text-foreground/90" 
+            onClick={() => {}}
+          >
+            Release Notes
           </Button>
         </div>
       )}

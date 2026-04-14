@@ -109,8 +109,16 @@ function OverviewTab({ workspace, collection, storagePath, envVars, onNavigate }
   const requestCount = collection?.requests?.length ?? 0;
 
   const [appVersion, setAppVersion] = useState("...");
+  const [updaterStatus, setUpdaterStatus] = useState("idle");
+
   useEffect(() => {
     getVersion().then(setAppVersion).catch(() => { });
+    
+    const handleStatusChange = (e) => setUpdaterStatus(e.detail.status);
+    window.addEventListener("updater-status-change", handleStatusChange);
+    window.dispatchEvent(new CustomEvent("updater-status-request"));
+    
+    return () => window.removeEventListener("updater-status-change", handleStatusChange);
   }, []);
 
   return (
@@ -200,14 +208,30 @@ function OverviewTab({ workspace, collection, storagePath, envVars, onNavigate }
                   <p className="text-[11px] text-muted-foreground mt-0.5">Current Version: v{appVersion}</p>
                 </div>
               </div>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="h-8 text-[11.5px] border-border/40 hover:bg-accent/50 transition-colors"
-                onClick={() => window.dispatchEvent(new CustomEvent('manual-update-check'))}
-              >
-                Check for Updates
-              </Button>
+              {updaterStatus === "available" ? (
+                <Button
+                  size="sm"
+                  className="h-8 text-[11.5px] px-4 gap-2 bg-teal-500/20 hover:bg-teal-500/30 text-teal-500 font-medium rounded shadow-none border-0"
+                  onClick={() => window.dispatchEvent(new CustomEvent('manual-update-install'))}
+                >
+                  <RefreshCw className="h-3 w-3" />
+                  Restart to Update
+                </Button>
+              ) : updaterStatus === "downloading" ? (
+                <Button variant="secondary" size="sm" disabled className="h-8 text-[11.5px] px-4 gap-2">
+                  <RefreshCw className="h-3 w-3 animate-spin" />
+                  Updating...
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="h-8 text-[11.5px] border-border/40 hover:bg-accent/50 transition-colors"
+                  onClick={() => window.dispatchEvent(new CustomEvent('manual-update-check'))}
+                >
+                  Check for Updates
+                </Button>
+              )}
             </div>
           </Card>
         </div>
