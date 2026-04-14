@@ -30,16 +30,16 @@ function TableEditor({
   valueLabel = "value",
   disabled = false
 }) {
-  function updateRow(id, field, value) {
-    onChange(rows.map((row) => (row.id === id ? { ...row, [field]: value } : row)));
+  function updateRow(index, field, value) {
+    onChange(rows.map((row, i) => (i === index ? { ...row, [field]: value } : row)));
   }
 
   function addRow() {
     onChange([...rows, createRow()]);
   }
 
-  function removeRow(id) {
-    onChange(rows.filter((row) => row.id !== id));
+  function removeRow(index) {
+    onChange(rows.filter((_, i) => i !== index));
   }
 
   function clearRows() {
@@ -166,13 +166,13 @@ function TableEditor({
           <div className="thin-scrollbar min-h-0 overflow-auto">
             {rows.length > 0 ? (
               rows.map((row, index) => (
-                <div key={row.id} className={cn("grid grid-cols-[32px_minmax(0,1fr)_minmax(0,1fr)_36px] border-b border-border/10 px-1", index % 2 === 0 && "bg-background/5")}>
+                <div key={row.id || `row-${index}`} className={cn("grid grid-cols-[32px_minmax(0,1fr)_minmax(0,1fr)_36px] border-b border-border/10 px-1", index % 2 === 0 && "bg-background/5")}>
                   <label className="flex items-center justify-center">
-                    <input disabled={disabled} type="checkbox" checked={row.enabled} onChange={(event) => updateRow(row.id, "enabled", event.target.checked)} />
+                    <input disabled={disabled} type="checkbox" checked={row.enabled ?? true} onChange={(event) => updateRow(index, "enabled", event.target.checked)} />
                   </label>
-                  <Input disabled={disabled} className="h-10 border-0 bg-transparent text-[12px] focus-visible:ring-0 lg:text-[14px]" value={row.key} onChange={(event) => updateRow(row.id, "key", event.target.value)} placeholder={keyLabel} />
-                  <Input disabled={disabled} className="h-10 border-0 bg-transparent text-[12px] focus-visible:ring-0 lg:text-[14px]" value={row.value} onChange={(event) => updateRow(row.id, "value", event.target.value)} placeholder={valueLabel} />
-                  <button type="button" disabled={disabled} className="flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40" onClick={() => removeRow(row.id)}>
+                  <Input disabled={disabled} className="h-10 border-0 bg-transparent text-[12px] focus-visible:ring-0 lg:text-[14px]" value={row.key} onChange={(event) => updateRow(index, "key", event.target.value)} placeholder={keyLabel} />
+                  <Input disabled={disabled} className="h-10 border-0 bg-transparent text-[12px] focus-visible:ring-0 lg:text-[14px]" value={row.value} onChange={(event) => updateRow(index, "value", event.target.value)} placeholder={valueLabel} />
+                  <button type="button" disabled={disabled} className="flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40" onClick={() => removeRow(index)}>
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
