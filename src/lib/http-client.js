@@ -9,7 +9,21 @@ export function loadAppState() {
 }
 
 export function saveAppState(payload) {
-  return invoke("save_app_state", { payload });
+  const cleanPayload = {
+    ...payload,
+    workspaces: payload.workspaces?.map((workspace) => ({
+      ...workspace,
+      collections: workspace.collections?.map((collection) => ({
+        ...collection,
+        requests: collection.requests?.map((request) => ({
+          ...request,
+          lastResponse: null
+        }))
+      }))
+    }))
+  };
+
+  return invoke("save_app_state", { payload: cleanPayload });
 }
 
 export function getEnvVars(workspaceName, collectionName) {
