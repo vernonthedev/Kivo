@@ -10,6 +10,7 @@ import { getVersion } from "@tauri-apps/api/app";
 import { Button } from "@/components/ui/button.jsx";
 import { Card } from "@/components/ui/card.jsx";
 import { Input } from "@/components/ui/input.jsx";
+import { EnvHighlightInput } from "@/components/ui/EnvHighlightInput.jsx";
 import { EnvEditor } from "@/components/workspace/EnvEditor.jsx";
 import { useCollectionConfig } from "@/hooks/use-collection-config.js";
 import { useEnv } from "@/hooks/use-env.js";
@@ -287,27 +288,33 @@ function HeadersTab({ config, updateConfig, onSave, onReset, isDirty, isSaving }
 
 const AUTH_MODES = [
   { value: "none", label: "No Auth" },
-  { value: "bearer", label: "Bearer Token" },
   { value: "basic", label: "Basic Auth" },
-  { value: "apiKey", label: "API Key" },
+  { value: "bearer", label: "Bearer Token" },
+  { value: "apikey", label: "API Key" },
 ];
 
-function AuthTab({ config, updateConfig, onSave, onReset, isDirty, isSaving }) {
+const API_KEY_IN_OPTIONS = [
+  { value: "header", label: "Header" },
+  { value: "query", label: "Query Param" },
+];
+
+function AuthTab({ config, updateConfig, onSave, onReset, isDirty, isSaving, envVars }) {
   const auth = config.defaultAuth ?? { type: "none", token: "" };
   const [showToken, setShowToken] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="flex flex-col gap-6 p-8 max-w-xl">
       <div>
-        <h3 className="text-lg font-semibold text-foreground tracking-tight">Collection Validation</h3>
+        <h3 className="text-lg font-semibold text-foreground tracking-tight">Collection Auth</h3>
         <p className="text-[13px] text-muted-foreground mt-1">
-          Requests set to <em>"Inherit"</em> will use this authentication payload.
+          Requests set to <em>"Inherit"</em> will use this authentication.
         </p>
       </div>
 
       <Card className="flex flex-col gap-5 border-border/20 bg-background/40 p-5 shadow-sm">
         <div className="grid gap-3 text-left w-full">
-          <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Authentication Protocol</label>
+          <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Authentication Type</label>
           <div className="flex items-center gap-2 p-1 rounded-lg bg-accent/30 border border-border/20 w-fit">
             {AUTH_MODES.map((m) => (
               <button
@@ -331,92 +338,118 @@ function AuthTab({ config, updateConfig, onSave, onReset, isDirty, isSaving }) {
           <div className="grid gap-2 text-left w-full" style={{ animation: "fadeIn 0.2s ease-out" }}>
             <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Access Token</label>
             <div className="relative">
-              <Input
-                value={auth.token}
-                onChange={(e) => updateConfig({ defaultAuth: { ...auth, token: e.target.value } })}
+              <EnvHighlightInput
+                value={auth.token ?? ""}
+                onValueChange={(val) => updateConfig({ defaultAuth: { ...auth, token: val } })}
                 placeholder="eyJhbG..."
                 type={showToken ? "text" : "password"}
-                className="h-10 border-border/40 bg-accent/20 font-mono text-[12px] shadow-inner focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/20 pr-10 [&::-ms-reveal]:hidden [&::-webkit-contacts-auto-fill-button]:hidden [&::-webkit-credentials-auto-fill-button]:hidden"
+                inputClassName="h-10 border-border/40 bg-accent/20 font-mono text-[12px] shadow-inner focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/20 pr-10"
+                envVars={envVars}
               />
               <button
                 type="button"
                 onClick={() => setShowToken(!showToken)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground z-10"
               >
                 {showToken ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
               </button>
             </div>
+            <p className="text-[11px] text-muted-foreground mt-1">Supports {'{{variables}}'} resolution at runtime.</p>
           </div>
         )}
+
         {auth.type === "basic" && (
           <div className="grid gap-4 text-left w-full" style={{ animation: "fadeIn 0.2s ease-out" }}>
             <div className="grid gap-2">
               <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Username</label>
-              <Input
-                value={auth.username || ""}
-                onChange={(e) => updateConfig({ defaultAuth: { ...auth, username: e.target.value } })}
-                placeholder="Username"
-                className="h-10 border-border/40 bg-accent/20 text-[13px]"
+              <EnvHighlightInput
+                value={auth.username ?? ""}
+                onValueChange={(val) => updateConfig({ defaultAuth: { ...auth, username: val } })}
+                placeholder="Enter username"
+                inputClassName="h-10 border-border/40 bg-accent/20 font-mono text-[12px] shadow-inner focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/20"
+                envVars={envVars}
               />
             </div>
             <div className="grid gap-2">
               <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Password</label>
-              <Input
-                type="password"
-                value={auth.password || ""}
-                onChange={(e) => updateConfig({ defaultAuth: { ...auth, password: e.target.value } })}
-                placeholder="Password"
-                className="h-10 border-border/40 bg-accent/20 font-mono text-[12px]"
-              />
+              <div className="relative">
+                <EnvHighlightInput
+                  value={auth.password ?? ""}
+                  onValueChange={(val) => updateConfig({ defaultAuth: { ...auth, password: val } })}
+                  placeholder="Enter password"
+                  type={showPassword ? "text" : "password"}
+                  inputClassName="h-10 border-border/40 bg-accent/20 font-mono text-[12px] shadow-inner focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/20 pr-10"
+                  envVars={envVars}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground z-10"
+                >
+                  {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+              </div>
             </div>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Generates <code className="text-[10px] bg-primary/10 text-primary px-1 py-0.5 rounded-sm">Authorization: Basic base64(user:pass)</code>. Supports {'{{variables}}'}.
+            </p>
           </div>
         )}
-        {auth.type === "apiKey" && (
+
+        {auth.type === "apikey" && (
           <div className="grid gap-4 text-left w-full" style={{ animation: "fadeIn 0.2s ease-out" }}>
             <div className="grid gap-2">
-              <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Key</label>
-              <Input
-                value={auth.key || ""}
-                onChange={(e) => updateConfig({ defaultAuth: { ...auth, key: e.target.value } })}
-                placeholder="X-API-Key"
-                className="h-10 border-border/40 bg-accent/20 text-[13px]"
+              <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Key Name</label>
+              <EnvHighlightInput
+                value={auth.apiKeyName ?? ""}
+                onValueChange={(val) => updateConfig({ defaultAuth: { ...auth, apiKeyName: val } })}
+                placeholder="e.g. X-API-Key"
+                inputClassName="h-10 border-border/40 bg-accent/20 font-mono text-[12px] shadow-inner focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/20"
+                envVars={envVars}
               />
             </div>
             <div className="grid gap-2">
-              <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Value</label>
-              <Input
-                value={auth.value || ""}
-                onChange={(e) => updateConfig({ defaultAuth: { ...auth, value: e.target.value } })}
-                placeholder="API key value"
-                className="h-10 border-border/40 bg-accent/20 text-[13px]"
+              <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Key Value</label>
+              <EnvHighlightInput
+                value={auth.apiKeyValue ?? ""}
+                onValueChange={(val) => updateConfig({ defaultAuth: { ...auth, apiKeyValue: val } })}
+                placeholder="Enter API key value"
+                inputClassName="h-10 border-border/40 bg-accent/20 font-mono text-[12px] shadow-inner focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/20"
+                envVars={envVars}
               />
             </div>
             <div className="grid gap-2">
-              <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Add to</label>
+              <label className="text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">Add To</label>
               <div className="flex items-center gap-2 p-1 rounded-lg bg-accent/30 border border-border/20 w-fit">
-                {[
-                  { value: "header", label: "Header" },
-                  { value: "query", label: "Query Params" },
-                ].map((l) => (
+                {API_KEY_IN_OPTIONS.map((opt) => (
                   <button
-                    key={l.value}
+                    key={opt.value}
                     type="button"
-                    onClick={() => updateConfig({ defaultAuth: { ...auth, addTo: l.value } })}
+                    onClick={() => updateConfig({ defaultAuth: { ...auth, apiKeyIn: opt.value } })}
                     className={cn(
-                      "px-3 py-1 rounded-md text-[11px] font-medium transition-all",
-                      (auth.addTo || "header") === l.value
-                        ? "bg-primary/20 text-primary shadow-sm"
+                      "px-4 py-1.5 rounded-md text-[12px] font-medium transition-all",
+                      (auth.apiKeyIn ?? "header") === opt.value
+                        ? "bg-primary text-primary-foreground shadow-sm"
                         : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                     )}
                   >
-                    {l.label}
+                    {opt.label}
                   </button>
                 ))}
               </div>
             </div>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              {(auth.apiKeyIn ?? "header") === "query"
+                ? "Key-value pair will be appended to the URL query string."
+                : "Key-value pair will be sent as an HTTP header."}
+              {" "}Supports {'{{variables}}'}.
+            </p>
           </div>
         )}
-        <p className="text-[11px] text-muted-foreground mt-1 text-left">Supports {'{{variables}}'} resolution at runtime.</p>
+
+        {auth.type === "none" && (
+          <p className="text-[12px] text-muted-foreground/70">No authentication will be applied to inherited requests.</p>
+        )}
       </Card>
       <div className="flex items-center justify-between border-t border-border/10 pt-6">
         <div className="flex items-center gap-3 text-sm">
@@ -568,6 +601,7 @@ export function CollectionSettingsPage({
             isSaving={isSaving}
             onSave={handleSave}
             onReset={reset}
+            envVars={envVars}
           />
         )}
       </div>

@@ -146,24 +146,13 @@ export function serializeHeaders(rows = [], auth = { type: "none", token: "" }, 
     headers.Authorization = `Bearer ${String(auth.token).trim()}`;
   }
 
-  if (auth?.type === "basic") {
-    const user = String(auth.username || "").trim();
-    const pass = String(auth.password || "").trim();
-    if (user || pass) {
-      try {
-        const credentials = btoa(`${user}:${pass}`);
-        headers.Authorization = `Basic ${credentials}`;
-      } catch (e) {
-        headers.Authorization = `Basic [encoding-error]`;
-      }
-    }
+  if (auth?.type === "basic" && (auth.username || auth.password)) {
+    const encoded = btoa(`${auth.username ?? ""}:${auth.password ?? ""}`);
+    headers.Authorization = `Basic ${encoded}`;
   }
 
-  if (auth?.type === "apiKey" && auth.addTo !== "query") {
-    const key = String(auth.key || "").trim();
-    if (key) {
-      headers[key] = String(auth.value || "").trim();
-    }
+  if (auth?.type === "apikey" && auth.apiKeyIn !== "query" && String(auth.apiKeyName || "").trim()) {
+    headers[String(auth.apiKeyName).trim()] = String(auth.apiKeyValue || "");
   }
 
   const contentType = explicitContentType || getDefaultContentType(bodyType);
@@ -201,9 +190,19 @@ export function buildUrlWithParams(rawUrl, params = []) {
 export function buildRequestExport(request) {
   const method = String(request?.method || "GET").toUpperCase();
   const bodyType = request?.bodyType ?? "json";
+  const auth = request?.auth ?? { type: "none" };
   const { body, contentType } = serializeBodyByType(request, method);
-  const headers = serializeHeaders(request?.headers ?? [], request?.auth ?? { type: "none", token: "" }, bodyType, contentType);
-  const url = buildUrlWithParams(request?.url ?? "", request?.queryParams ?? []);
+  const headers = serializeHeaders(request?.headers ?? [], auth, bodyType, contentType);
+  let url = buildUrlWithParams(request?.url ?? "", request?.queryParams ?? []);
+
+  if (auth.type === "apikey" && auth.apiKeyIn === "query" && String(auth.apiKeyName || "").trim()) {
+    try {
+      const parsed = new URL(url);
+      parsed.searchParams.append(String(auth.apiKeyName).trim(), String(auth.apiKeyValue || ""));
+      url = parsed.toString();
+    } catch {
+    }
+  }
 
   return {
     name: request?.name || "Untitled Request",
@@ -218,6 +217,7 @@ export function buildRequestExport(request) {
 
 export function buildRequestPayload(request, workspaceName, collectionName) {
   const { method, url, headers, body, hasBody } = buildRequestExport(request);
+  const auth = request?.auth ?? { type: "none" };
 
   return {
     method,
@@ -226,9 +226,13 @@ export function buildRequestPayload(request, workspaceName, collectionName) {
     body: hasBody ? body : null,
     workspaceName: workspaceName || "",
     collectionName: collectionName || "",
-    authType: request?.auth?.type ?? "none",
-    auth: request?.auth ?? null,
+    authType: auth.type ?? "none",
     inheritHeaders: request?.inheritHeaders ?? true,
+    authPayload: auth.type === "inherit" ? null : {
+      apiKeyIn: auth.apiKeyIn ?? "header",
+      apiKeyName: auth.apiKeyName ?? "",
+      apiKeyValue: auth.apiKeyValue ?? "",
+    },
   };
 }
 

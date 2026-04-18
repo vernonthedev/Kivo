@@ -1,6 +1,8 @@
 use std::collections::HashMap;
 use std::time::Instant;
-use base64::{engine::general_purpose, Engine as _};
+
+use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
+use base64::Engine;
 
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue, USER_AGENT};
 use tauri::AppHandle;
@@ -102,56 +104,81 @@ pub async fn send_http_request(
         );
     }
 
-    // 1. Resolve Auth Context
-    let active_auth = if payload.auth_type == "inherit" {
-        Some(col_config.default_auth)
-    } else {
-        payload.auth
-    };
+    let has_auth_header = merged_headers
+        .keys()
+        .any(|k| k.to_lowercase() == "authorization");
 
-    let mut resolved_url = resolve_variables(&payload.url, &env_vars);
-
-    if let Some(auth) = active_auth {
+    if payload.auth_type == "inherit" && !has_auth_header {
+        let auth = &col_config.default_auth;
         match auth.auth_type.as_str() {
-            "bearer" => {
-                if !auth.token.is_empty() {
-                    let resolved_token = resolve_variables(&auth.token, &env_vars);
-                    merged_headers.insert("Authorization".to_string(), format!("Bearer {}", resolved_token));
-                }
+            "bearer" if !auth.token.is_empty() => {
+                let resolved = resolve_variables(&auth.token, &env_vars);
+                merged_headers.insert(
+                    "Authorization".to_string(),
+                    format!("Bearer {}", resolved),
+                );
             }
-            "basic" => {
-                if !auth.username.is_empty() || !auth.password.is_empty() {
-                    let user = resolve_variables(&auth.username, &env_vars);
-                    let pass = resolve_variables(&auth.password, &env_vars);
-                    let credentials = format!("{}:{}", user, pass);
-                    let encoded = general_purpose::STANDARD.encode(credentials);
-                    merged_headers.insert("Authorization".to_string(), format!("Basic {}", encoded));
-                }
+            "basic" if !auth.username.is_empty() || !auth.password.is_empty() => {
+                let u = resolve_variables(&auth.username, &env_vars);
+                let p = resolve_variables(&auth.password, &env_vars);
+                let encoded = BASE64_STANDARD.encode(format!("{}:{}", u, p));
+                merged_headers.insert(
+                    "Authorization".to_string(),
+                    format!("Basic {}", encoded),
+                );
             }
-            "apiKey" => {
-                if !auth.key.is_empty() {
-                    let key = resolve_variables(&auth.key, &env_vars);
-                    let value = resolve_variables(&auth.value, &env_vars);
-                    
-                    if auth.add_to == "query" {
-                        if let Ok(mut url_obj) = reqwest::Url::parse(&normalize_url(&resolved_url)?) {
-                            url_obj.query_pairs_mut().append_pair(&key, &value);
-                            resolved_url = url_obj.to_string();
-                        }
-                    } else {
-                        merged_headers.insert(key, value);
-                    }
+            "apikey" if !auth.api_key_name.is_empty() => {
+                let name = resolve_variables(&auth.api_key_name, &env_vars);
+                let value = resolve_variables(&auth.api_key_value, &env_vars);
+                if auth.api_key_in == "query" {
+                } else {
+                    merged_headers.insert(name, value);
                 }
             }
             _ => {}
         }
     }
+
+    let resolved_url = resolve_variables(&payload.url, &env_vars);
     let resolved_body = payload
         .body
         .as_deref()
         .map(|b| resolve_variables(b, &env_vars));
 
-    let url = normalize_url(&resolved_url)?;
+    let mut url = normalize_url(&resolved_url)?;
+
+    let should_inject_apikey_query = if payload.auth_type == "inherit" {
+        col_config.default_auth.auth_type == "apikey"
+            && col_config.default_auth.api_key_in == "query"
+            && !col_config.default_auth.api_key_name.is_empty()
+    } else {
+        false
+    };
+
+    if should_inject_apikey_query {
+        let name = resolve_variables(&col_config.default_auth.api_key_name, &env_vars);
+        let value = resolve_variables(&col_config.default_auth.api_key_value, &env_vars);
+        if let Ok(mut parsed) = reqwest::Url::parse(&url) {
+            parsed.query_pairs_mut().append_pair(&name, &value);
+            url = parsed.to_string();
+        }
+    }
+
+    if payload.auth_type == "apikey" {
+        if let Some(ref ap) = payload.auth_payload {
+            if ap.api_key_in == "query" && !ap.api_key_name.is_empty() {
+                let name = resolve_variables(&ap.api_key_name, &env_vars);
+                let value = resolve_variables(&ap.api_key_value, &env_vars);
+                if let Ok(mut parsed) = reqwest::Url::parse(&url) {
+                    let already_has = parsed.query_pairs().any(|(k, _)| k == name);
+                    if !already_has {
+                        parsed.query_pairs_mut().append_pair(&name, &value);
+                        url = parsed.to_string();
+                    }
+                }
+            }
+        }
+    }
 
     let client = reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::limited(10))

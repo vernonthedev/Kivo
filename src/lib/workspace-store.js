@@ -46,15 +46,7 @@ export function createRequest(name = "New Request") {
     url: "",
     queryParams: [],
     headers: [],
-    auth: { 
-      type: "none", 
-      token: "",
-      username: "",
-      password: "",
-      key: "",
-      value: "",
-      addTo: "header"
-    },
+    auth: { type: "none", token: "", username: "", password: "", apiKeyName: "", apiKeyValue: "", apiKeyIn: "header" },
     bodyType: "json",
     body: "",
     bodyRows: [],
@@ -139,24 +131,16 @@ export function normalizeRequestRecord(request) {
     bodyRows: Array.isArray(request?.bodyRows) ? request.bodyRows : [],
     graphqlVariables: typeof request?.graphqlVariables === "string" ? request.graphqlVariables : "{\n\n}",
     auth: request?.auth && typeof request.auth === "object"
-      ? { 
-          type: request.auth.type ?? "none", 
-          token: request.auth.token ?? "",
-          username: request.auth.username ?? "",
-          password: request.auth.password ?? "",
-          key: request.auth.key ?? "",
-          value: request.auth.value ?? "",
-          addTo: request.auth.addTo ?? "header"
-        }
-      : { 
-          type: "none", 
-          token: "",
-          username: "",
-          password: "",
-          key: "",
-          value: "",
-          addTo: "header"
-        }
+      ? {
+        type: request.auth.type ?? "none",
+        token: request.auth.token ?? "",
+        username: request.auth.username ?? "",
+        password: request.auth.password ?? "",
+        apiKeyName: request.auth.apiKeyName ?? "",
+        apiKeyValue: request.auth.apiKeyValue ?? "",
+        apiKeyIn: request.auth.apiKeyIn ?? "header",
+      }
+      : { type: "none", token: "", username: "", password: "", apiKeyName: "", apiKeyValue: "", apiKeyIn: "header" }
   };
 }
 

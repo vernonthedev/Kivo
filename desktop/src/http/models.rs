@@ -1,7 +1,17 @@
 use std::collections::HashMap;
-use crate::storage::AuthRecord;
 
 use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct AuthPayload {
+    #[serde(default)]
+    pub api_key_in: String,
+    #[serde(default)]
+    pub api_key_name: String,
+    #[serde(default)]
+    pub api_key_value: String,
+}
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -21,10 +31,10 @@ pub struct RequestPayload {
     pub auth_type: String,
 
     #[serde(default)]
-    pub auth: Option<AuthRecord>,
+    pub inherit_headers: Option<bool>,
 
     #[serde(default)]
-    pub inherit_headers: Option<bool>,
+    pub auth_payload: Option<AuthPayload>,
 }
 
 #[derive(Debug, Serialize)]

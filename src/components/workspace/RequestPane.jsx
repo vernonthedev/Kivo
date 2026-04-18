@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { Braces, ChevronDown, Plus, SendHorizontal, Trash2, Wand2, PenLine, Table2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Braces, ChevronDown, Eye, EyeOff, Plus, SendHorizontal, Trash2, Wand2, PenLine, Table2 } from "lucide-react";
 
 import { CodeEditor } from "@/components/workspace/CodeEditor.jsx";
 import { Button } from "@/components/ui/button.jsx";
@@ -8,14 +8,15 @@ import { Input } from "@/components/ui/input.jsx";
 import { formatGraphqlText, formatJsonText } from "@/lib/formatters.js";
 import { getMethodTone, requestBodyModes } from "@/lib/http-ui.js";
 import { cn } from "@/lib/utils.js";
+import { EnvHighlightInput } from "@/components/ui/EnvHighlightInput.jsx";
 
 const tabs = ["Params", "Body", "Auth", "Headers", "Docs"];
 const requestMethods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"];
 const authModes = [
   { value: "none", label: "No Auth" },
-  { value: "bearer", label: "Bearer Token" },
   { value: "basic", label: "Basic Auth" },
-  { value: "apiKey", label: "API Key" },
+  { value: "bearer", label: "Bearer Token" },
+  { value: "apikey", label: "API Key" },
   { value: "inherit", label: "Inherit from Collection" },
 ];
 
@@ -340,6 +341,126 @@ function MethodPicker({ value, onChange }) {
   );
 }
 
+const apiKeyInOptions = [
+  { value: "header", label: "Header" },
+  { value: "query", label: "Query Param" },
+];
+
+function AuthPanel({ state, onAuthChange, envVars }) {
+  const auth = state.auth ?? { type: "none" };
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <div className="grid gap-4 px-3 py-3 text-[12px] text-muted-foreground">
+      <div className="grid max-w-[420px] gap-2">
+        <label className="text-[10px] uppercase tracking-[0.18em]">Type</label>
+        <SelectMenu
+          value={auth.type}
+          options={authModes}
+          onChange={(type) => onAuthChange({ ...auth, type })}
+        />
+      </div>
+
+      {auth.type === "basic" && (
+        <div className="grid max-w-[420px] gap-4" style={{ animation: "fadeIn 0.2s ease-out" }}>
+          <div className="grid gap-2">
+            <label className="text-[10px] uppercase tracking-[0.18em]">Username</label>
+            <EnvHighlightInput
+              value={auth.username ?? ""}
+              onValueChange={(val) => onAuthChange({ ...auth, username: val })}
+              placeholder="Enter username"
+              envVars={envVars}
+            />
+          </div>
+          <div className="grid gap-2">
+            <label className="text-[10px] uppercase tracking-[0.18em]">Password</label>
+            <div className="relative">
+              <EnvHighlightInput
+                value={auth.password ?? ""}
+                onValueChange={(val) => onAuthChange({ ...auth, password: val })}
+                placeholder="Enter password"
+                type={showPassword ? "text" : "password"}
+                envVars={envVars}
+                inputClassName="pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground z-10"
+              >
+                {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+          </div>
+          <p className="text-[11px] text-muted-foreground/70">
+            Generates <code className="text-[10px] bg-primary/10 text-primary px-1 py-0.5 rounded-sm">Authorization: Basic base64(user:pass)</code> header. Supports <code className="text-[10px] bg-primary/10 text-primary px-1 py-0.5 rounded-sm">{"{{variables}}"}</code>.
+          </p>
+        </div>
+      )}
+
+      {auth.type === "bearer" && (
+        <div className="grid max-w-[420px] gap-2" style={{ animation: "fadeIn 0.2s ease-out" }}>
+          <label className="text-[10px] uppercase tracking-[0.18em]">Token</label>
+          <EnvHighlightInput
+            value={auth.token ?? ""}
+            onValueChange={(val) => onAuthChange({ ...auth, token: val })}
+            placeholder="Paste bearer token"
+            envVars={envVars}
+          />
+          <p className="text-[11px] text-muted-foreground/70">
+            Generates <code className="text-[10px] bg-primary/10 text-primary px-1 py-0.5 rounded-sm">Authorization: Bearer &lt;token&gt;</code> header. Supports <code className="text-[10px] bg-primary/10 text-primary px-1 py-0.5 rounded-sm">{"{{variables}}"}</code>.
+          </p>
+        </div>
+      )}
+
+      {auth.type === "apikey" && (
+        <div className="grid max-w-[420px] gap-4" style={{ animation: "fadeIn 0.2s ease-out" }}>
+          <div className="grid gap-2">
+            <label className="text-[10px] uppercase tracking-[0.18em]">Key</label>
+            <EnvHighlightInput
+              value={auth.apiKeyName ?? ""}
+              onValueChange={(val) => onAuthChange({ ...auth, apiKeyName: val })}
+              placeholder="e.g. X-API-Key"
+              envVars={envVars}
+            />
+          </div>
+          <div className="grid gap-2">
+            <label className="text-[10px] uppercase tracking-[0.18em]">Value</label>
+            <EnvHighlightInput
+              value={auth.apiKeyValue ?? ""}
+              onValueChange={(val) => onAuthChange({ ...auth, apiKeyValue: val })}
+              placeholder="Enter API key value"
+              envVars={envVars}
+            />
+          </div>
+          <div className="grid gap-2">
+            <label className="text-[10px] uppercase tracking-[0.18em]">Add to</label>
+            <SelectMenu
+              value={auth.apiKeyIn ?? "header"}
+              options={apiKeyInOptions}
+              onChange={(apiKeyIn) => onAuthChange({ ...auth, apiKeyIn })}
+            />
+          </div>
+          <p className="text-[11px] text-muted-foreground/70">
+            {auth.apiKeyIn === "query"
+              ? "Key-value pair will be appended to the URL query string."
+              : "Key-value pair will be sent as an HTTP header."}
+            {" "}Supports <code className="text-[10px] bg-primary/10 text-primary px-1 py-0.5 rounded-sm">{"{{variables}}"}</code>.
+          </p>
+        </div>
+      )}
+
+      {(auth.type === "none" || auth.type === "inherit") && (
+        <div className="bg-background/20 p-3">
+          {auth.type === "inherit"
+            ? "This request will use the authentication configured on the parent collection."
+            : "No authentication will be applied to this request."}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function RequestPane({
   state,
   isSending,
@@ -357,17 +478,30 @@ export function RequestPane({
   const isGraphqlBody = state.bodyType === "graphql";
   const isTableBody = state.bodyType === "form-data" || state.bodyType === "form-urlencoded";
 
-  const missingVars = (() => {
+  const [debouncedState, setDebouncedState] = useState(state);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedState(state), 500);
+    return () => clearTimeout(timer);
+  }, [state.url, state.body, state.auth, state.headers]);
+
+  const missingVars = useMemo(() => {
     if (!envVars) return [];
     const merged = envVars.merged ?? {};
+    const auth = debouncedState.auth ?? {};
     const allText = [
-      state.url ?? "",
-      ...(state.headers ?? []).map((h) => `${h.key}=${h.value}`),
-      state.body ?? "",
+      debouncedState.url ?? "",
+      ...(debouncedState.headers ?? []).map((h) => `${h.key}=${h.value}`),
+      debouncedState.body ?? "",
+      auth.token ?? "",
+      auth.username ?? "",
+      auth.password ?? "",
+      auth.apiKeyName ?? "",
+      auth.apiKeyValue ?? "",
     ].join(" ");
     const placeholders = [...allText.matchAll(/\{\{([^}]+)\}\}/g)].map((m) => m[1].trim());
     return [...new Set(placeholders)].filter((key) => !(key in merged));
-  })();
+  }, [debouncedState, envVars]);
 
   function handleFormatBody() {
     if (!isJsonBody) return;
@@ -379,11 +513,12 @@ export function RequestPane({
       <div className="grid grid-cols-[108px_minmax(0,1fr)_92px] gap-px border-b border-border/25 bg-border/20 lg:grid-cols-[124px_minmax(0,1fr)_108px]">
         <MethodPicker value={state.method} onChange={(method) => onChange("method", method)} />
 
-        <Input
-          className="h-8 rounded-none border-0 bg-input/60 text-[12.5px] lg:h-10 lg:text-[14px]"
+        <EnvHighlightInput
+          inputClassName="h-8 rounded-none border-0 bg-input/60 text-[12.5px] lg:h-10 lg:text-[14px]"
           value={state.url}
-          onChange={(event) => onChange("url", event.target.value)}
+          onValueChange={(val) => onChange("url", val)}
           placeholder="https://api.example.com/v1/users"
+          envVars={envVars}
         />
 
         <Button className="h-8 gap-1.5 rounded-none px-2.5 text-[12px] lg:h-10 lg:text-[14px]" onClick={onSend} type="button" disabled={isSending}>
@@ -501,69 +636,7 @@ export function RequestPane({
         ) : null}
 
         {activeTab === "Auth" ? (
-          <div className="grid gap-4 px-3 py-3 text-[12px] text-muted-foreground">
-            <div className="grid max-w-[420px] gap-2">
-              <label className="text-[10px] uppercase tracking-[0.18em]">Type</label>
-              <SelectMenu
-                value={state.auth.type}
-                options={authModes}
-                onChange={(type) => onAuthChange({ ...state.auth, type })}
-              />
-            </div>
-            {state.auth.type === "bearer" && (
-              <div className="grid max-w-[420px] gap-2">
-                <label className="text-[10px] uppercase tracking-[0.18em]">Token</label>
-                <Input value={state.auth.token} onChange={(event) => onAuthChange({ ...state.auth, token: event.target.value })} placeholder="Paste bearer token" />
-              </div>
-            )}
-            {state.auth.type === "basic" && (
-              <div className="grid max-w-[420px] gap-4">
-                <div className="grid gap-2">
-                  <label className="text-[10px] uppercase tracking-[0.18em]">Username</label>
-                  <Input value={state.auth.username || ""} onChange={(e) => onAuthChange({ ...state.auth, username: e.target.value })} placeholder="Username" />
-                </div>
-                <div className="grid gap-2">
-                  <label className="text-[10px] uppercase tracking-[0.18em]">Password</label>
-                  <Input type="password" value={state.auth.password || ""} onChange={(e) => onAuthChange({ ...state.auth, password: e.target.value })} placeholder="Password" />
-                </div>
-              </div>
-            )}
-            {state.auth.type === "apiKey" && (
-              <div className="grid max-w-[420px] gap-4">
-                <div className="grid gap-2">
-                  <label className="text-[10px] uppercase tracking-[0.18em]">Key</label>
-                  <Input value={state.auth.key || ""} onChange={(e) => onAuthChange({ ...state.auth, key: e.target.value })} placeholder="X-API-Key" />
-                </div>
-                <div className="grid gap-2">
-                  <label className="text-[10px] uppercase tracking-[0.18em]">Value</label>
-                  <Input value={state.auth.value || ""} onChange={(e) => onAuthChange({ ...state.auth, value: e.target.value })} placeholder="API key value" />
-                </div>
-                <div className="grid gap-2">
-                  <label className="text-[10px] uppercase tracking-[0.18em]">Add to</label>
-                  <SelectMenu
-                    value={state.auth.addTo || "header"}
-                    options={[
-                      { value: "header", label: "Header" },
-                      { value: "query", label: "Query Params" },
-                    ]}
-                    onChange={(addTo) => onAuthChange({ ...state.auth, addTo })}
-                  />
-                </div>
-              </div>
-            )}
-            {state.auth.type === "none" && (
-              <div className="bg-background/20 p-3 italic">This request does not use any authentication.</div>
-            )}
-            {state.auth.type === "inherit" && (
-              <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
-                <p className="text-[12px] text-foreground font-medium mb-1">Inheriting from Collection</p>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  This request uses the authentication settings defined in its parent collection. 
-                  You can manage these in the Collection Settings.
-                </p>
-              </div>
-            )}
-          </div>
+          <AuthPanel state={state} onAuthChange={onAuthChange} envVars={envVars} />
         ) : null}
 
         {activeTab === "Docs" ? (

@@ -4,15 +4,7 @@ import { getCollectionConfig, saveCollectionConfig } from "@/lib/http-client.js"
 
 const DEFAULT_CONFIG = {
   defaultHeaders: [],
-  defaultAuth: { 
-    type: "none", 
-    token: "",
-    username: "",
-    password: "",
-    key: "",
-    value: "",
-    addTo: "header"
-  },
+  defaultAuth: { type: "none", token: "", username: "", password: "", apiKeyName: "", apiKeyValue: "", apiKeyIn: "header" },
   scripts: { preRequest: "", postResponse: "" },
 };
 
@@ -34,14 +26,14 @@ export function useCollectionConfig(workspaceName, collectionName) {
       const result = await getCollectionConfig(workspaceName, collectionName);
       const normalized = {
         defaultHeaders: result.defaultHeaders ?? [],
-        defaultAuth: result.defaultAuth ?? { 
-          type: "none", 
-          token: "",
-          username: "",
-          password: "",
-          key: "",
-          value: "",
-          addTo: "header"
+        defaultAuth: {
+          type: result.defaultAuth?.type ?? "none",
+          token: result.defaultAuth?.token ?? "",
+          username: result.defaultAuth?.username ?? "",
+          password: result.defaultAuth?.password ?? "",
+          apiKeyName: result.defaultAuth?.apiKeyName ?? "",
+          apiKeyValue: result.defaultAuth?.apiKeyValue ?? "",
+          apiKeyIn: result.defaultAuth?.apiKeyIn ?? "header",
         },
         scripts: result.scripts ?? { preRequest: "", postResponse: "" },
       };

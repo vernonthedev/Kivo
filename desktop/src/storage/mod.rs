@@ -52,9 +52,9 @@ fn default_auth_record() -> AuthRecord {
         token: String::new(),
         username: String::new(),
         password: String::new(),
-        key: String::new(),
-        value: String::new(),
-        add_to: "header".to_string(),
+        api_key_name: String::new(),
+        api_key_value: String::new(),
+        api_key_in: "header".to_string(),
     }
 }
 
@@ -271,12 +271,12 @@ pub struct AuthRecord {
     pub username: String,
     #[serde(default)]
     pub password: String,
-    #[serde(default)]
-    pub key: String,
-    #[serde(default)]
-    pub value: String,
-    #[serde(default)]
-    pub add_to: String,
+    #[serde(default, rename = "apiKeyName")]
+    pub api_key_name: String,
+    #[serde(default, rename = "apiKeyValue")]
+    pub api_key_value: String,
+    #[serde(default, rename = "apiKeyIn")]
+    pub api_key_in: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
