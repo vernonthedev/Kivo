@@ -1,6 +1,6 @@
-# Kivo JSON Query Engine v1
+# Kivo JSON Query Engine v1.1
 
-A query engine for filtering JSON response payloads. Supports text search, conditional expressions, compound queries with `&&` / `||` / `!`, and parenthetical grouping.
+A query engine for filtering JSON response payloads. Supports text search, conditional expressions, compound queries with `&&` / `||` / `!`, parenthetical grouping, case-insensitive string matching, dot-path nested queries, and array element matching.
 
 ---
 
@@ -48,6 +48,10 @@ User Query String
 |---|---|---|
 | Text search | `dex` | Fuzzy match on keys and values |
 | Condition | `age > 20` | Compare a key's value |
+| String match | `username = dex` | Case-insensitive prefix match |
+| Exact match | `username == Dex` | Case-sensitive exact match |
+| Dot-path | `address.city = Kolkata` | Query nested object fields |
+| Array match | `techstack = rust` | Match values inside arrays |
 | Compound AND | `age > 20 && status == active` | Both conditions must match |
 | Compound OR | `name == dex \|\| name == dexter` | Either condition matches |
 | Grouping | `(a == 1 \|\| b == 2) && c > 3` | Parenthetical precedence |
@@ -59,8 +63,9 @@ User Query String
 
 | Operator | Description |
 |---|---|
-| `=` or `==` | Loose equality |
-| `!=` | Not equal |
+| `=` | Prefix match (case-insensitive) — `name = d` matches `"Dex"` |
+| `==` | Exact match (case-sensitive) — `name == Dex` matches only `"Dex"` |
+| `!=` | Not equal (case-insensitive for strings) |
 | `>` | Greater than |
 | `>=` | Greater than or equal |
 | `<` | Less than |
@@ -79,6 +84,39 @@ Values are auto-detected:
 - **Strings**: `"quoted"`, `'quoted'`, or `bare` (unquoted identifiers)
 - **Escaped strings**: `"hello \"world\""`, `'it\'s'`
 
+String comparisons differ by operator:
+
+- **`=`** (single equals) — **case-insensitive prefix match**. `name = d` matches `"Dex"`, `"dexter"`, etc.
+- **`==`** (double equals) — **case-sensitive exact match**. `name == Dex` matches only `"Dex"`, not `"dex"`.
+
+```
+name = d        → matches "Dex", "dexter"    (prefix, any case)
+name = dex      → matches "Dex", "dexter"    (prefix, any case)
+name == Dex     → matches only "Dex"         (exact case)
+name == dex     → no match for "Dex"         (wrong case)
+```
+
+### Dot-Path Syntax
+
+Use `.` to query nested object fields:
+
+```
+address.city = Kolkata         → matches { address: { city: "Kolkata" } }
+data.user.profile.bio = hello  → 3-level deep nesting
+meta.region = asia             → nested metadata queries
+```
+
+Dot-path queries return the **top-level parent object**, not just the nested match.
+
+### Array Element Matching
+
+Conditions automatically check inside array values:
+
+```
+techstack = rust    → matches { techstack: ["c", "rust", "go"] }
+tags = api          → matches { tags: ["api", "rest"] }
+```
+
 ---
 
 ## How It Works
@@ -92,7 +130,10 @@ When a JSON response is received, a preprocessing pass runs once:
    - Every primitive value has a pre-computed `__str` (lowercased string representation)
    - Original values are preserved as references (never cloned)
 
-2. **Global Index** — Builds a `Map<key, entries[]>` indexing every key in the tree, used for condition query lookups.
+2. **Global Index** — Builds a `Map<key, entries[]>` indexing:
+   - Every simple key in the tree (e.g., `city`, `name`)
+   - Every dot-path from parent objects (e.g., `address.city`, `data.user.profile.bio`)
+   - Used for both simple and nested condition query lookups
 
 ```
 Raw JSON ──► buildNormalized() ──► Wrapper Tree

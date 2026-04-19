@@ -1,16 +1,19 @@
-// Kivo JSON Query Engine v1
+// Kivo JSON Query Engine v1.1
 // Architecture:
 //   Query → Tokenizer → Parser → AST → Validator → Query Planner → Executor
 //
 // Supports:
 //   - Text search:     "dex"
 //   - Conditions:      age > 20
+//   - String match:    username = dex  (case-insensitive)
+//   - Dot-path:        address.city = Kolkata
+//   - Array values:    techstack = cpp
 //   - Compound:        age > 20 && status == "active"
 //   - Complex:         (name == "dex" || name == "dexter") && age >= 18
 //   - Negation:        !(completed == true)
 //   - NOT shorthand:   !completed (equivalent to completed == false)
 //
-// Operators: == != > < >= <= = (alias for ==)
+// Operators: == (exact, case-sensitive) = (prefix, case-insensitive) != > < >= <=
 // Logical:   && || !
 // Grouping:  ( )
 
@@ -41,28 +44,48 @@ function buildNormalized(raw) {
 
 function buildGlobalIndex(root) {
   const index = new Map();
-  const stack = [root];
+
+  function addEntry(key, parent, valueNode) {
+    let list = index.get(key);
+    if (!list) { list = []; index.set(key, list); }
+    list.push({ parent, valueNode });
+  }
+
+  const stack = [{ node: root, pathSegments: [], dotParent: null }];
 
   while (stack.length > 0) {
-    const wrapper = stack.pop();
+    const { node: wrapper, pathSegments, dotParent } = stack.pop();
     if (wrapper.type !== "object" && wrapper.type !== "array") continue;
 
     if (wrapper.type === "object") {
       for (let i = 0; i < wrapper.children.length; i++) {
         const child = wrapper.children[i];
-        let list = index.get(child.lowerKey);
-        if (!list) {
-          list = [];
-          index.set(child.lowerKey, list);
+
+        // Index by simple key (parent = this object)
+        addEntry(child.lowerKey, wrapper, child.node);
+
+        // Index by dot-path if we have a path context from a parent object
+        if (pathSegments.length > 0 && dotParent) {
+          const dotPath = pathSegments.concat(child.lowerKey).join(".");
+          addEntry(dotPath, dotParent, child.node);
         }
-        list.push({ parent: wrapper, valueNode: child.node });
+
         if (child.node.type === "object" || child.node.type === "array") {
-          stack.push(child.node);
+          stack.push({
+            node: child.node,
+            pathSegments: pathSegments.concat(child.lowerKey),
+            dotParent: dotParent || wrapper
+          });
         }
       }
     } else {
+      // Array: each element starts a fresh path context
       for (let i = 0; i < wrapper.children.length; i++) {
-        stack.push(wrapper.children[i].node);
+        stack.push({
+          node: wrapper.children[i].node,
+          pathSegments: [],
+          dotParent: null
+        });
       }
     }
   }
@@ -120,7 +143,7 @@ function tokenize(input) {
       tokens.push({ type: TOKEN.OP, value: "<=" }); i += 2; continue;
     }
     if (input[i] === "=") {
-      tokens.push({ type: TOKEN.OP, value: "==" }); i++; continue;
+      tokens.push({ type: TOKEN.OP, value: "=" }); i++; continue;
     }
     if (input[i] === ">") {
       tokens.push({ type: TOKEN.OP, value: ">" }); i++; continue;
@@ -160,7 +183,7 @@ function tokenize(input) {
       } else if (!isNaN(Number(word)) && word !== "") {
         tokens.push({ type: TOKEN.NUMBER, value: Number(word) });
       } else {
-        tokens.push({ type: TOKEN.IDENT, value: word.toLowerCase() });
+        tokens.push({ type: TOKEN.IDENT, value: word.toLowerCase(), original: word });
       }
       i = j; continue;
     }
@@ -188,7 +211,7 @@ function parse(tokens) {
   function peek() { return pos < tokens.length ? tokens[pos] : null; }
   function advance() { return tokens[pos++]; }
 
-  function parseValue() {
+  function parseValue(op) {
     const t = peek();
     if (!t) return undefined;
     if (t.type === TOKEN.STRING || t.type === TOKEN.NUMBER ||
@@ -198,7 +221,8 @@ function parse(tokens) {
     }
     if (t.type === TOKEN.IDENT) {
       advance();
-      return t.value;
+      // For == (exact match), use original case; for = (prefix), use lowered
+      return op === "==" ? t.original : t.value;
     }
     return undefined;
   }
@@ -221,7 +245,7 @@ function parse(tokens) {
       const opToken = peek();
       if (opToken && opToken.type === TOKEN.OP) {
         const op = advance().value;
-        const val = parseValue();
+        const val = parseValue(op);
         if (val === undefined) return null; // validation missing value
         return { type: "COND", key, op, value: val };
       }
@@ -278,9 +302,19 @@ function parse(tokens) {
 // ==========================
 
 function compileCond(op, val) {
+  const isStrVal = typeof val === "string";
+  const lowerVal = isStrVal ? val.toLowerCase() : val;
+
   switch (op) {
-    case "==": return (v) => v == val;
-    case "!=": return (v) => v != val;
+    case "==": return (v) => v == val; // exact, case-sensitive for strings
+    case "=": return (v) => { // case-insensitive prefix match for strings
+      if (isStrVal && typeof v === "string") return v.toLowerCase().startsWith(lowerVal);
+      return v == val;
+    };
+    case "!=": return (v) => {
+      if (isStrVal && typeof v === "string") return v.toLowerCase() !== lowerVal;
+      return v != val;
+    };
     case ">": return (v) => v > val;
     case ">=": return (v) => v >= val;
     case "<": return (v) => v < val;
@@ -352,6 +386,20 @@ function planQuery(ast, globalIndex) {
 
 const MAX_MATCHES = 500;
 
+// Check if a matcher matches a value node, handling arrays by checking each element
+function matchesValueNode(matcher, valueNode) {
+  if (valueNode.type === "array") {
+    for (let j = 0; j < valueNode.children.length; j++) {
+      const elem = valueNode.children[j].node;
+      if ((elem.type === "leaf" || elem.type === "null") && matcher(elem.orig)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  return matcher(valueNode.orig);
+}
+
 // execute an INDEX plan and return Set<parent.orig>
 function executeIndex(plan, globalIndex) {
   const entries = globalIndex.get(plan.key);
@@ -359,7 +407,7 @@ function executeIndex(plan, globalIndex) {
 
   const result = new Set();
   for (let i = 0; i < entries.length; i++) {
-    if (plan.matcher(entries[i].valueNode.orig)) {
+    if (matchesValueNode(plan.matcher, entries[i].valueNode)) {
       result.add(entries[i].parent.orig);
       if (result.size >= MAX_MATCHES) break;
     }
@@ -636,7 +684,7 @@ export function filterJson(data, inputStr) {
       let op = match[2];
       const valStr = match[3].trim();
 
-      if (op === "=") op = "==";
+      // Keep = and == as distinct operators (no aliasing)
 
       let val = valStr;
       if (valStr === "true") val = true;
@@ -652,7 +700,7 @@ export function filterJson(data, inputStr) {
 
       const matched = new Set();
       for (let i = 0; i < entries.length; i++) {
-        if (matcher(entries[i].valueNode.orig)) {
+        if (matchesValueNode(matcher, entries[i].valueNode)) {
           matched.add(entries[i].parent.orig);
           if (matched.size >= MAX_MATCHES) break;
         }
