@@ -1,31 +1,27 @@
 import { useEffect, useState } from "react";
 
 const storageKey = "kivo-theme";
-const themes = ["light", "dark"];
 
 function getInitialTheme() {
-  const savedTheme = window.localStorage.getItem(storageKey);
-
-  if (themes.includes(savedTheme)) {
-    return savedTheme;
-  }
-
-  return "dark";
+  const saved = window.localStorage.getItem(storageKey);
+  if (saved === "light" || saved === "dark") return saved;
+  return "light";
 }
 
 export function useTheme() {
   const [theme, setTheme] = useState(getInitialTheme);
 
   useEffect(() => {
-    document.documentElement.classList.remove("theme-light", "theme-dark");
-    document.documentElement.classList.add(`theme-${theme}`);
     document.documentElement.setAttribute("data-theme", theme);
+    document.body.setAttribute("data-theme", theme);
+    document.documentElement.classList.remove("light", "dark");
+    document.documentElement.classList.add(theme);
     window.localStorage.setItem(storageKey, theme);
   }, [theme]);
 
   return {
     theme,
     setTheme,
-    toggleTheme: () => setTheme((current) => (current === "dark" ? "light" : "dark"))
+    toggleTheme: () => setTheme(t => t === "dark" ? "light" : "dark")
   };
 }
