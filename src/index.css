@@ -29,6 +29,94 @@
   #root {
     @apply h-full overflow-hidden;
   }
+
+  .bg-background {
+    @apply bg-base-200;
+  }
+
+  .text-foreground {
+    @apply text-base-content;
+  }
+
+  .bg-card {
+    @apply bg-base-100;
+  }
+
+  .text-card-foreground {
+    @apply text-base-content;
+  }
+
+  .bg-popover {
+    @apply bg-base-100;
+  }
+
+  .text-popover-foreground {
+    @apply text-base-content;
+  }
+
+  .text-primary-foreground {
+    @apply text-primary-content;
+  }
+
+  .bg-secondary {
+    @apply bg-secondary;
+  }
+
+  .text-secondary-foreground {
+    @apply text-secondary-content;
+  }
+
+  .bg-muted {
+    @apply bg-base-300;
+  }
+
+  .text-muted-foreground {
+    @apply text-base-content/60;
+  }
+
+  .bg-accent {
+    @apply bg-base-300;
+  }
+
+  .text-accent-foreground {
+    @apply text-base-content;
+  }
+
+  .border-border {
+    @apply border-base-300;
+  }
+
+  .bg-input {
+    @apply bg-base-300;
+  }
+
+  .text-ring {
+    @apply text-primary;
+  }
+
+  .bg-success {
+    @apply bg-success;
+  }
+
+  .text-success {
+    @apply text-success;
+  }
+
+  .bg-warning {
+    @apply bg-warning;
+  }
+
+  .text-warning {
+    @apply text-warning;
+  }
+
+  .bg-danger {
+    @apply bg-error;
+  }
+
+  .text-danger {
+    @apply text-error;
+  }
 }
 
 @layer utilities {
