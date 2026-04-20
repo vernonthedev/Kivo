@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
-  Book02Icon, CodeIcon, File01Icon, FlaskIcon, FolderOpenIcon, GlobeIcon, Layers01Icon,
-  FloppyDiskIcon, Share01Icon, ArrowReloadIcon, ArrowRight01Icon, ViewIcon, ViewOffIcon, RefreshIcon
+  Book02Icon, CodeIcon, File01Icon, Chemistry01Icon, FolderOpenIcon, GlobeIcon, Layers01Icon,
+  FloppyDiskIcon, Share01Icon, ReloadIcon, ArrowRight01Icon, ViewIcon, ViewOffIcon, RefreshIcon
 } from "hugeicons-react";
 
 import { invoke } from "@tauri-apps/api/core";
