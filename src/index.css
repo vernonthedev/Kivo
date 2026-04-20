@@ -71,7 +71,7 @@
   }
 
   .text-muted-foreground {
-    @apply text-base-content/60;
+    color: oklch(var(--base-content) / 0.6);
   }
 
   .bg-accent {
