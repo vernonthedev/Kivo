@@ -16,8 +16,8 @@ import { useEnv } from "@/hooks/use-env.js";
 import { getResolvedStoragePath } from "@/lib/http-client.js";
 import { SIDEBAR_COLLAPSED_WIDTH } from "@/lib/workspace-utils.js";
 import {
-  Github, Globe, Layers, Moon, Settings, SquareKanban, Star, Sun,
-} from "lucide-react";
+  GithubIcon, GlobeIcon, Layers01Icon, Moon01Icon, Settings01Icon, KanbanIcon, StarIcon, Sun01Icon,
+} from "hugeicons-react";
 
 function EnvChip({ globalCount, collectionCount, onClick }) {
   const total = globalCount + collectionCount;
@@ -30,7 +30,7 @@ function EnvChip({ globalCount, collectionCount, onClick }) {
       className="group flex h-7 items-center gap-2 rounded-md border border-border/40 bg-accent/30 px-2 text-[10px] font-semibold text-muted-foreground transition-all hover:border-primary/40 hover:bg-primary/10 hover:text-foreground shadow-sm"
     >
       <span className="flex items-center gap-1.5 opacity-80 group-hover:opacity-100">
-        <Globe className="h-3 w-3 text-primary/80 group-hover:text-primary transition-colors" />
+        <GlobeIcon className="h-3 w-3 text-primary/80 group-hover:text-primary transition-colors" />
         <span className="uppercase tracking-[0.1em]">ENV</span>
       </span>
       {total > 0 && (
@@ -198,7 +198,7 @@ export default function App() {
           {showNoWorkspaceState ? (
             <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <SquareKanban className="h-8 w-8 text-primary" />
+                <KanbanIcon className="h-8 w-8 text-primary" />
               </div>
               <div className="max-w-md space-y-2">
                 <div className="text-[12px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">No Workspace Yet</div>
@@ -212,7 +212,7 @@ export default function App() {
           ) : showNoCollectionsState ? (
             <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
               <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <Layers className="h-8 w-8 text-primary" />
+                <Layers01Icon className="h-8 w-8 text-primary" />
               </div>
               <div className="max-w-md space-y-2">
                 <div className="text-[12px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">No Collections Yet</div>
@@ -251,12 +251,12 @@ export default function App() {
                     className="flex cursor-pointer items-center gap-1.5 rounded-full bg-accent/30 px-3 py-1.5 text-muted-foreground transition-all hover:bg-accent/50 hover:text-foreground"
                     onClick={() => openUrl("https://github.com/dexter-xD/Kivo")}
                   >
-                    <Github className="h-[16px] w-[16px]" />
+                    <GithubIcon className="h-[16px] w-[16px]" />
                     <span className="text-[11px] font-semibold">{starCount ?? "..."}</span>
-                    <Star className="h-[14px] w-[14px] fill-current text-yellow-500/80" />
+                    <StarIcon className="h-[14px] w-[14px] fill-current text-yellow-500/80" />
                   </button>
                   <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-muted-foreground hover:bg-accent/40 hover:text-foreground" onClick={toggleTheme}>
-                    {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+                    {theme === "dark" ? <Sun01Icon className="h-[18px] w-[18px]" /> : <Moon01Icon className="h-[18px] w-[18px]" />}
                   </Button>
                   <Button
                     variant="ghost"
@@ -265,7 +265,7 @@ export default function App() {
                     onClick={() => openCollectionSettings("Overview")}
                     title="Collection Settings"
                   >
-                    <Settings className="h-[18px] w-[18px]" />
+                    <Settings01Icon className="h-[18px] w-[18px]" />
                   </Button>
                 </div>
               </div>
@@ -311,12 +311,12 @@ export default function App() {
                     className="flex cursor-pointer items-center gap-1.5 rounded-full bg-accent/30 px-3 py-1.5 text-muted-foreground transition-all hover:bg-accent/50 hover:text-foreground"
                     onClick={() => openUrl("https://github.com/dexter-xD/Kivo")}
                   >
-                    <Github className="h-[16px] w-[16px]" />
+                    <GithubIcon className="h-[16px] w-[16px]" />
                     <span className="text-[11px] font-semibold">{starCount ?? "..."}</span>
-                    <Star className="h-[14px] w-[14px] fill-current text-yellow-500/80" />
+                    <StarIcon className="h-[14px] w-[14px] fill-current text-yellow-500/80" />
                   </button>
                   <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-muted-foreground hover:bg-accent/40 hover:text-foreground" onClick={toggleTheme}>
-                    {theme === "dark" ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+                    {theme === "dark" ? <Sun01Icon className="h-[18px] w-[18px]" /> : <Moon01Icon className="h-[18px] w-[18px]" />}
                   </Button>
                   <Button
                     variant="ghost"
@@ -325,7 +325,7 @@ export default function App() {
                     onClick={() => openCollectionSettings("Overview")}
                     title="Collection Settings"
                   >
-                    <Settings className="h-[18px] w-[18px]" />
+                    <Settings01Icon className="h-[18px] w-[18px]" />
                   </Button>
                 </div>
               </div>
@@ -360,4 +360,3 @@ export default function App() {
     </div>
   );
 }
-

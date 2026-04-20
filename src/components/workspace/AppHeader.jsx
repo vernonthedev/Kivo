@@ -1,4 +1,4 @@
-import { Github, Sparkles } from "lucide-react";
+import { GithubIcon, SparklesIcon } from "hugeicons-react";
 import { openUrl } from "@tauri-apps/plugin-opener";
 
 import { Button } from "@/components/ui/button.jsx";
@@ -14,7 +14,7 @@ export function AppHeader({ workspaceTitle, workspaceDescription, starCount }) {
     <Card className="flex items-center justify-between gap-4 border-0 border-b border-border/30 bg-card/55 px-3 py-2.5 shadow-none">
       <div className="flex items-center gap-3 min-w-0">
         <div className="hidden h-8 w-8 items-center justify-center bg-primary/12 text-primary sm:flex">
-          <Sparkles className="h-4 w-4" />
+          <SparklesIcon className="h-4 w-4" />
         </div>
         <div className="min-w-0">
           <p className="truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground lg:text-[12px]">{workspaceTitle}</p>
@@ -30,7 +30,7 @@ export function AppHeader({ workspaceTitle, workspaceDescription, starCount }) {
           className="h-7 gap-1.5 rounded-sm border-border/40 bg-card/40 px-2.5 text-[11px] text-foreground"
           onClick={() => openUrl("https://github.com/dexter-xD/Kivo")}
         >
-          <Github className="h-3.5 w-3.5" />
+          <GithubIcon className="h-3.5 w-3.5" />
           {starCount !== null ? <span className="leading-none">{starCount.toLocaleString()}</span> : null}
         </Button>
         <ThemeToggle theme={theme} onToggle={toggleTheme} />

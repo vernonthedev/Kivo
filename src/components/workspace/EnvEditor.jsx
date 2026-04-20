@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Eye, EyeOff, Plus, RotateCcw, Save, Trash2 } from "lucide-react";
+import { ViewIcon, ViewOffIcon, PlusSignIcon, ArrowReloadIcon, FloppyDiskIcon, Delete02Icon } from "hugeicons-react";
 
 import { Button } from "@/components/ui/button.jsx";
 import { Input } from "@/components/ui/input.jsx";
@@ -100,7 +100,7 @@ function EnvTable({ rows, onChange, onDelete, workspaceVarKeys = [] }) {
                       : "text-muted-foreground hover:bg-accent hover:text-foreground"
                   )}
                 >
-                  {row.secret ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                  {row.secret ? <ViewOffIcon className="h-3.5 w-3.5" /> : <ViewIcon className="h-3.5 w-3.5" />}
                 </button>
               </div>
               <div className="flex h-10 items-center justify-center">
@@ -109,7 +109,7 @@ function EnvTable({ rows, onChange, onDelete, workspaceVarKeys = [] }) {
                   onClick={() => removeRow(row.id)}
                   className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-red-500/10 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all justify-self-center"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Delete02Icon className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
@@ -277,7 +277,7 @@ export function EnvEditor({ workspaceName, collectionName, initialTab = "workspa
             onClick={() => handleSave()}
             disabled={isSaving || !isDirty}
           >
-            <Save className="h-3.5 w-3.5" />
+            <FloppyDiskIcon className="h-3.5 w-3.5" />
             {isSaving ? "Saving…" : savedFeedback ? "Saved!" : "Save"}
           </Button>
         </div>
@@ -285,4 +285,3 @@ export function EnvEditor({ workspaceName, collectionName, initialTab = "workspa
     </div>
   );
 }
-

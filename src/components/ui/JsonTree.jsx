@@ -1,5 +1,5 @@
 import { useState, useEffect, memo } from "react";
-import { ChevronDown, ChevronRight, Copy, Check } from "lucide-react";
+import { ArrowDown01Icon, ArrowRight01Icon, Copy01Icon, Tick01Icon } from "hugeicons-react";
 import { cn } from "@/lib/utils";
 
 function HighlightedText({ text, query }) {
@@ -51,7 +51,7 @@ function CopyButton({ value }) {
       className="opacity-0 group-hover:opacity-100 transition-opacity ml-2 text-muted-foreground hover:text-foreground focus:outline-none"
       title="Copy value"
     >
-      {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+      {copied ? <Tick01Icon className="h-3.5 w-3.5 text-emerald-500" /> : <Copy01Icon className="h-3.5 w-3.5" />}
     </button>
   );
 }
@@ -136,7 +136,7 @@ export const JsonTree = memo(function JsonTree({ data, name, depth = 0, isLast =
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex h-3 w-3 items-center justify-center text-muted-foreground shrink-0">
-          {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+          {expanded ? <ArrowDown01Icon className="h-3 w-3" /> : <ArrowRight01Icon className="h-3 w-3" />}
         </div>
         {name && <span className="json-key">"<HighlightedText text={name} query={searchQuery} />":</span>}
         <span className="json-punctuation">{bracketOpen}</span>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Check, ChevronDown, ChevronRight, Code2, Copy, FolderKanban, Layers, MoreVertical, Pencil, Pin, Plus, Search, Settings, SquareKanban, Trash2, X } from "lucide-react";
+import { Tick01Icon, ArrowDown01Icon, ArrowRight01Icon, CodeIcon, Copy01Icon, Folder01Icon, Layers01Icon, MoreVerticalIcon, PencilEdit01Icon, PinIcon, PlusSignIcon, Search01Icon, Settings01Icon, KanbanIcon, Delete02Icon, Cancel01Icon } from "hugeicons-react";
 import { invoke } from "@tauri-apps/api/core";
 
 import { CodeEditor } from "@/components/workspace/CodeEditor.jsx";
@@ -109,14 +109,14 @@ function CreationField({ initialValue, existingNames, onSubmit, onCancel, placeh
           isValid ? "text-green-500" : "text-muted-foreground opacity-50 cursor-not-allowed"
         )}
       >
-        <Check className="h-3.5 w-3.5" />
+        <Tick01Icon className="h-3.5 w-3.5" />
       </button>
       <button
         type="button"
         onClick={onCancel}
         className="p-1 rounded hover:bg-accent text-red-500 transition-colors"
       >
-        <X className="h-3.5 w-3.5" />
+        <Cancel01Icon className="h-3.5 w-3.5" />
       </button>
     </form>
   );
@@ -188,7 +188,7 @@ function GenerateCodeModal({ request, language, onLanguageChange, onClose }) {
           <div ref={languageMenuRef} className="relative">
             <button type="button" onClick={() => setLanguageOpen((c) => !c)} className="flex h-9 w-full items-center justify-between border border-border/40 bg-background/70 px-3 text-[12px] text-foreground outline-none transition-colors hover:bg-accent/35 focus-visible:ring-1 focus-visible:ring-ring">
               <span>{selectedLanguage.label}</span>
-              <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", languageOpen && "rotate-180")} />
+              <ArrowDown01Icon className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", languageOpen && "rotate-180")} />
             </button>
             {languageOpen && (
               <div className="thin-scrollbar absolute left-0 right-0 top-[calc(100%+6px)] z-20 max-h-64 overflow-auto border border-border/60 bg-popover shadow-2xl">
@@ -234,34 +234,34 @@ function RequestContextMenu({ menu, onGenerateCode, onCopyCurl, onRename, onDupl
   return createPortal(
     <div className="fixed z-[210] min-w-[180px] border border-border/60 bg-popover p-1 shadow-2xl" style={{ left: menu.x, top: menu.y }} onMouseDown={(e) => e.stopPropagation()} onContextMenu={(e) => e.preventDefault()}>
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onGenerateCode(menu.workspaceName, menu.collectionName, menu.requestName); onClose(); }}>
-        <Code2 className="h-3.5 w-3.5" /> Generate Code
+        <CodeIcon className="h-3.5 w-3.5" /> Generate Code
       </button>
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onCopyCurl(menu.workspaceName, menu.collectionName, menu.requestName); onClose(); }}>
-        <Copy className="h-3.5 w-3.5" /> Copy as cURL
+        <Copy01Icon className="h-3.5 w-3.5" /> Copy as cURL
       </button>
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onTogglePin(menu.workspaceName, menu.collectionName, menu.requestName); onClose(); }}>
-        <Pin className="h-3.5 w-3.5" /> {menu.pinned ? "Unpin" : "Pin"}
+        <PinIcon className="h-3.5 w-3.5" /> {menu.pinned ? "Unpin" : "Pin"}
       </button>
       <div className="my-1 border-t border-border/40" />
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onCopy(menu.workspaceName, menu.collectionName, menu.requestName); onClose(); }}>
-        <Copy className="h-3.5 w-3.5" /> Copy Request
+        <Copy01Icon className="h-3.5 w-3.5" /> Copy Request
       </button>
       <button type="button" disabled={!canPaste} className={cn("flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] transition-colors", canPaste ? "text-foreground hover:bg-accent/45" : "text-muted-foreground opacity-50 cursor-not-allowed")} onClick={() => { if (canPaste) { onPaste(menu.workspaceName, menu.collectionName); onClose(); } }}>
-        <Copy className="h-3.5 w-3.5" /> Paste Request
+        <Copy01Icon className="h-3.5 w-3.5" /> Paste Request
       </button>
       <div className="my-1 border-t border-border/40" />
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onRename(menu.workspaceName, menu.collectionName, menu.requestName); onClose(); }}>
-        <Pencil className="h-3.5 w-3.5" /> Rename
+        <PencilEdit01Icon className="h-3.5 w-3.5" /> Rename
       </button>
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onDuplicate(menu.workspaceName, menu.collectionName, menu.requestName); onClose(); }}>
-        <Copy className="h-3.5 w-3.5" /> Duplicate
+        <Copy01Icon className="h-3.5 w-3.5" /> Duplicate
       </button>
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onReveal(menu.workspaceName, menu.collectionName, menu.requestName); onClose(); }}>
-        <FolderKanban className="h-3.5 w-3.5" /> Show in Files
+        <Folder01Icon className="h-3.5 w-3.5" /> Show in Files
       </button>
       <div className="my-1 border-t border-border/40" />
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-red-500 hover:bg-accent/45" onClick={() => { onDelete(menu.workspaceName, menu.collectionName, menu.requestName); onClose(); }}>
-        <Trash2 className="h-3.5 w-3.5" /> Delete
+        <Delete02Icon className="h-3.5 w-3.5" /> Delete
       </button>
     </div>,
     document.body
@@ -283,28 +283,28 @@ function CollectionContextMenu({ menu, onCreateRequest, onRename, onDuplicate, o
   return createPortal(
     <div className="fixed z-[210] min-w-[180px] border border-border/60 bg-popover p-1 shadow-2xl" style={{ left: menu.x, top: menu.y }} onMouseDown={(e) => e.stopPropagation()} onContextMenu={(e) => e.preventDefault()}>
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onCreateRequest(menu.workspaceName, menu.collectionName); onClose(); }}>
-        <Plus className="h-3.5 w-3.5" /> New Request
+        <PlusSignIcon className="h-3.5 w-3.5" /> New Request
       </button>
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onOpenSettings?.(); onClose(); }}>
-        <Settings className="h-3.5 w-3.5" /> Settings
+        <Settings01Icon className="h-3.5 w-3.5" /> Settings
       </button>
       <div className="my-1 border-t border-border/40" />
       <button type="button" disabled={!canPaste} className={cn("flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] transition-colors", canPaste ? "text-foreground hover:bg-accent/45" : "text-muted-foreground opacity-50 cursor-not-allowed")} onClick={() => { if (canPaste) { onPaste(menu.workspaceName, menu.collectionName); onClose(); } }}>
-        <Copy className="h-3.5 w-3.5" /> Paste Request
+        <Copy01Icon className="h-3.5 w-3.5" /> Paste Request
       </button>
       <div className="my-1 border-t border-border/40" />
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onRename(menu.workspaceName, menu.collectionName); onClose(); }}>
-        <Pencil className="h-3.5 w-3.5" /> Rename
+        <PencilEdit01Icon className="h-3.5 w-3.5" /> Rename
       </button>
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onDuplicate(menu.workspaceName, menu.collectionName); onClose(); }}>
-        <Copy className="h-3.5 w-3.5" /> Duplicate
+        <Copy01Icon className="h-3.5 w-3.5" /> Duplicate
       </button>
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-foreground hover:bg-accent/45" onClick={() => { onReveal(menu.workspaceName, menu.collectionName); onClose(); }}>
-        <FolderKanban className="h-3.5 w-3.5" /> Show in Files
+        <Folder01Icon className="h-3.5 w-3.5" /> Show in Files
       </button>
       <div className="my-1 border-t border-border/40" />
       <button type="button" className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-red-500 hover:bg-accent/45" onClick={() => { onDelete(menu.workspaceName, menu.collectionName); onClose(); }}>
-        <Trash2 className="h-3.5 w-3.5" /> Delete
+        <Delete02Icon className="h-3.5 w-3.5" /> Delete
       </button>
     </div>,
     document.body
@@ -488,12 +488,12 @@ export function RequestsView({
           className="flex w-full items-center justify-between gap-2 px-1 py-1.5 text-left transition-colors hover:bg-accent/35 rounded"
         >
           <div className="flex items-center gap-2 min-w-0">
-            <SquareKanban className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <KanbanIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
             <span className="truncate text-[14px] font-semibold text-foreground">
               {activeWorkspace?.name ?? "No workspace"}
             </span>
           </div>
-          <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", isWorkspaceSwitcherOpen && "rotate-180")} />
+          <ArrowDown01Icon className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", isWorkspaceSwitcherOpen && "rotate-180")} />
         </button>
 
         {isWorkspaceSwitcherOpen && (
@@ -522,7 +522,7 @@ export function RequestsView({
               }}
               className="flex w-full items-center gap-2 px-3 py-2 text-left text-[12px] text-muted-foreground hover:bg-accent/45 rounded"
             >
-              <Plus className="h-3.5 w-3.5" /> Create Workspace
+              <PlusSignIcon className="h-3.5 w-3.5" /> Create Workspace
             </button>
           </div>
         )}
@@ -555,7 +555,7 @@ export function RequestsView({
         <>
           <div className="flex items-center justify-between px-1 mb-2">
             <div className="flex items-center gap-2">
-              <Layers className="h-4 w-4 text-muted-foreground" />
+              <Layers01Icon className="h-4 w-4 text-muted-foreground" />
               <span className="text-[12px] font-semibold text-foreground">Collections</span>
             </div>
             <div className="flex items-center gap-1">
@@ -564,17 +564,17 @@ export function RequestsView({
                 className={cn("p-1 text-muted-foreground hover:bg-accent hover:text-foreground rounded transition-colors", isSearchVisible && "bg-accent text-foreground")}
                 title="Search"
               >
-                <Search className="h-4 w-4" />
+                <Search01Icon className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setIsCreatingCollection(true)}
                 className="p-1 text-muted-foreground hover:bg-accent hover:text-foreground rounded transition-colors"
                 title="Create collection"
               >
-                <Plus className="h-4 w-4" />
+                <PlusSignIcon className="h-4 w-4" />
               </button>
               <button className="p-1 text-muted-foreground hover:bg-accent hover:text-foreground rounded transition-colors" title="Options">
-                <MoreVertical className="h-4 w-4" />
+                <MoreVerticalIcon className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -582,7 +582,7 @@ export function RequestsView({
           {isSearchVisible && (
             <div className="px-1 mb-3">
               <div className="relative">
-                <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Search01Icon className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
                 <Input
                   autoFocus
                   className="h-8 pl-8 text-[12px] bg-background/50 border-border/40 focus:border-border/60"
@@ -601,7 +601,7 @@ export function RequestsView({
         {!activeWorkspace ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 space-y-4 opacity-80">
             <div className="p-3 bg-accent/20 rounded-full">
-              <SquareKanban className="h-8 w-8 text-muted-foreground" />
+              <KanbanIcon className="h-8 w-8 text-muted-foreground" />
             </div>
             <div className="space-y-1">
               <p className="text-[13px] font-medium text-foreground">No workspace selected</p>
@@ -615,7 +615,7 @@ export function RequestsView({
                 setShowWorkspaceForm(true);
               }}
             >
-              <Plus className="mr-2 h-3.5 w-3.5" /> Create Workspace
+              <PlusSignIcon className="mr-2 h-3.5 w-3.5" /> Create Workspace
             </Button>
           </div>
         ) : (
@@ -666,7 +666,7 @@ export function RequestsView({
                       <div
                         className="text-muted-foreground hover:text-foreground p-0.5"
                       >
-                        {isColExpanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+                        {isColExpanded ? <ArrowDown01Icon className="h-3.5 w-3.5" /> : <ArrowRight01Icon className="h-3.5 w-3.5" />}
                       </div>
                       <div className="truncate text-[12.5px] font-medium flex-1 text-left">
                         {col.name}
@@ -675,13 +675,13 @@ export function RequestsView({
                         <button type="button" onClick={() => {
                           setExpandedCollectionNames(c => Array.from(new Set([...c, col.name])));
                           setCreatingRequestInCollection(col.name);
-                        }} className="p-1 text-muted-foreground hover:text-foreground"><Plus className="h-3.5 w-3.5" /></button>
+                        }} className="p-1 text-muted-foreground hover:text-foreground"><PlusSignIcon className="h-3.5 w-3.5" /></button>
                         <button type="button" onClick={(e) => {
                           e.stopPropagation();
                           setEditingWorkspaceName(null);
                           setEditingItemId(`col:${col.name}`);
-                        }} className="p-1 text-muted-foreground hover:text-foreground"><Pencil className="h-3.5 w-3.5" /></button>
-                        <button type="button" onClick={() => onDeleteCollection(effectiveWorkspaceName, col.name)} className="p-1 text-muted-foreground hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button>
+                        }} className="p-1 text-muted-foreground hover:text-foreground"><PencilEdit01Icon className="h-3.5 w-3.5" /></button>
+                        <button type="button" onClick={() => onDeleteCollection(effectiveWorkspaceName, col.name)} className="p-1 text-muted-foreground hover:text-red-500"><Delete02Icon className="h-3.5 w-3.5" /></button>
                       </div>
                     </div>
                   )}
@@ -716,11 +716,11 @@ export function RequestsView({
                               >
                                 <div className="flex min-w-0 flex-1 items-center gap-2 text-left">
                                   <span className={cn("text-[10px] font-bold uppercase w-8 shrink-0", getMethodTone(req.method).split(" ")[0])}>{req.method}</span>
-                                  {req.pinned && <Pin className="h-3 w-3 text-primary shrink-0" />}
+                                  {req.pinned && <PinIcon className="h-3 w-3 text-primary shrink-0" />}
                                   <span className="truncate">{req.name}</span>
                                 </div>
                                 <div className="flex items-center opacity-0 group-hover:opacity-100" onClick={(e) => e.stopPropagation()}>
-                                  <button type="button" className="p-1 text-muted-foreground hover:text-red-500" onClick={() => onDeleteRequest(effectiveWorkspaceName, col.name, req.name)}><Trash2 className="h-3.5 w-3.5" /></button>
+                                  <button type="button" className="p-1 text-muted-foreground hover:text-red-500" onClick={() => onDeleteRequest(effectiveWorkspaceName, col.name, req.name)}><Delete02Icon className="h-3.5 w-3.5" /></button>
                                 </div>
                               </div>
                             )}
@@ -748,7 +748,7 @@ export function RequestsView({
                           }}
                           className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          <Plus className="h-3 w-3" /> New Request
+                          <PlusSignIcon className="h-3 w-3" /> New Request
                         </button>
                       )}
                     </div>
@@ -836,7 +836,7 @@ export function Sidebar({
     <aside className={cn("grid h-full min-h-0 overflow-hidden border-r border-border/30 bg-border/20", collapsed ? "grid-cols-[52px]" : "grid-cols-[52px_minmax(0,1fr)] gap-px")}>
       <Card data-tauri-drag-region className="flex min-h-0 flex-col items-center gap-2 bg-[hsl(var(--sidebar))]/96 p-2.5 shadow-none">
         <div className="flex h-8 w-8 items-center justify-center overflow-hidden bg-card/85"><img src={iconSrc} alt="Kivo" className="h-6 w-6 object-contain" /></div>
-        <Button variant={sidebarTab === "requests" ? "secondary" : "ghost"} size="icon" className="h-8 w-8" onClick={() => onSidebarTabChange("requests")}><SquareKanban className="h-4 w-4" /></Button>
+        <Button variant={sidebarTab === "requests" ? "secondary" : "ghost"} size="icon" className="h-8 w-8" onClick={() => onSidebarTabChange("requests")}><KanbanIcon className="h-4 w-4" /></Button>
         <div className="mt-auto" />
       </Card>
       {!collapsed && (

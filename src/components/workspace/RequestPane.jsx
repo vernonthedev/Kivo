@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Braces, ChevronDown, Eye, EyeOff, Plus, SendHorizontal, Trash2, Wand2, PenLine, Table2 } from "lucide-react";
+import { CodeIcon, ArrowDown01Icon, ViewIcon, ViewOffIcon, PlusSignIcon, SentIcon, Delete02Icon, MagicWand01Icon, PencilEdit01Icon, TableIcon } from "hugeicons-react";
 
 import { CodeEditor } from "@/components/workspace/CodeEditor.jsx";
 import { Button } from "@/components/ui/button.jsx";
@@ -116,12 +116,12 @@ function TableEditor({
           >
             {isBulkMode ? (
               <>
-                <Table2 className="h-3 w-3" />
+                <TableIcon className="h-3 w-3" />
                 Key-Value Edit
               </>
             ) : (
               <>
-                <PenLine className="h-3 w-3" />
+                <PencilEdit01Icon className="h-3 w-3" />
                 Bulk Edit
               </>
             )}
@@ -133,7 +133,7 @@ function TableEditor({
             disabled={disabled || isBulkMode}
             className={cn("flex items-center gap-1 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40", isBulkMode && "hidden")}
           >
-            <Plus className="h-3.5 w-3.5" />
+            <PlusSignIcon className="h-3.5 w-3.5" />
             {addLabel}
           </button>
           <button
@@ -176,7 +176,7 @@ function TableEditor({
                   <Input disabled={disabled} className="h-10 border-0 bg-transparent text-[12px] focus-visible:ring-0 lg:text-[14px]" value={row.key} onChange={(event) => updateRow(index, "key", event.target.value)} placeholder={keyLabel} />
                   <Input disabled={disabled} className="h-10 border-0 bg-transparent text-[12px] focus-visible:ring-0 lg:text-[14px]" value={row.value} onChange={(event) => updateRow(index, "value", event.target.value)} placeholder={valueLabel} />
                   <button type="button" disabled={disabled} className="flex items-center justify-center text-muted-foreground hover:text-foreground disabled:opacity-40" onClick={() => removeRow(index)}>
-                    <Trash2 className="h-3.5 w-3.5" />
+                    <Delete02Icon className="h-3.5 w-3.5" />
                   </button>
                 </div>
               ))
@@ -212,12 +212,12 @@ function GraphQLEditor({ query, variables, onQueryChange, onVariablesChange, dis
   }
 
   return (
-    <div className="grid h-full min-h-0 grid-rows-[minmax(0,1fr)_auto_minmax(0,1fr)] overflow-hidden bg-background/10">
+    <div className="grid h-full min-0 grid-rows-[minmax(0,1fr)_auto_minmax(0,1fr)] overflow-hidden bg-background/10">
       <div className="grid min-h-0 grid-rows-[auto_minmax(0,1fr)]">
         <div className="flex items-center justify-between border-b border-border/20 px-3 py-2 text-[11px] text-muted-foreground lg:text-[12px]">
           <span className="font-medium text-foreground">Query</span>
           <Button type="button" variant="outline" size="sm" className="h-7 px-2.5 text-[11px]" onClick={handleFormatQuery} disabled={disabled}>
-            <Wand2 className="h-3 w-3" />
+            <MagicWand01Icon className="h-3 w-3" />
             Format Query
           </Button>
         </div>
@@ -236,7 +236,7 @@ function GraphQLEditor({ query, variables, onQueryChange, onVariablesChange, dis
         <div className="flex items-center justify-between border-b border-border/20 px-3 py-2 text-[11px] text-muted-foreground lg:text-[12px]">
           <span className="font-medium text-foreground">Variables</span>
           <Button type="button" variant="outline" size="sm" className="h-7 px-2.5 text-[11px]" onClick={handleFormatVariables} disabled={disabled}>
-            <Wand2 className="h-3 w-3" />
+            <MagicWand01Icon className="h-3 w-3" />
             Format Variables
           </Button>
         </div>
@@ -290,7 +290,7 @@ function SelectMenu({ value, options, onChange, className, renderValue, renderOp
         )}
       >
         <span className="truncate">{renderValue ? renderValue(selected) : selected.label}</span>
-        <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", open && "rotate-180")} />
+        <ArrowDown01Icon className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", open && "rotate-180")} />
       </button>
 
       {open ? (
@@ -388,7 +388,7 @@ function AuthPanel({ state, onAuthChange, envVars }) {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground z-10"
               >
-                {showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                {showPassword ? <ViewOffIcon className="h-3.5 w-3.5" /> : <ViewIcon className="h-3.5 w-3.5" />}
               </button>
             </div>
           </div>
@@ -522,7 +522,7 @@ export function RequestPane({
         />
 
         <Button className="h-8 gap-1.5 rounded-none px-2.5 text-[12px] lg:h-10 lg:text-[14px]" onClick={onSend} type="button" disabled={isSending}>
-          <SendHorizontal className="h-3 w-3 lg:h-4 lg:w-4" />
+          <SentIcon className="h-3 w-3 lg:h-4 lg:w-4" />
           {isSending ? "Sending" : "Send"}
         </Button>
       </div>
@@ -589,13 +589,13 @@ export function RequestPane({
                   className="min-w-[180px]"
                 />
                 <div className="flex items-center gap-1 border border-border/25 bg-background/20 px-2.5 py-1.5 uppercase tracking-[0.14em]">
-                  <Braces className="h-3 w-3" />
+                  <CodeIcon className="h-3 w-3" />
                   <span>{isGraphqlBody ? "GraphQL Request" : isTableBody ? "Form Request" : isJsonBody ? "JSON Highlight" : "Plain Editor"}</span>
                 </div>
               </div>
               {isJsonBody ? (
                 <Button variant="outline" size="sm" className="h-8 px-2.5 text-[11px]" type="button" onClick={handleFormatBody} disabled={bodyDisabled}>
-                  <Wand2 className="h-3 w-3" />
+                  <MagicWand01Icon className="h-3 w-3" />
                   Format JSON
                 </Button>
               ) : null}

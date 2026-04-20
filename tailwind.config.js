@@ -65,5 +65,38 @@ module.exports = {
       }
     }
   },
-  plugins: []
+  plugins: [require("daisyui")],
+  daisyui: {
+    themes: [
+      {
+        light: {
+          "primary": "hsl(217 78% 54%)",
+          "secondary": "hsl(34 22% 88%)",
+          "accent": "hsl(36 24% 84%)",
+          "neutral": "hsl(24 18% 15%)",
+          "base-100": "hsl(38 38% 93%)",
+          "info": "hsl(217 78% 54%)",
+          "success": "hsl(156 58% 32%)",
+          "warning": "hsl(34 86% 42%)",
+          "error": "hsl(3 68% 48%)",
+        },
+        dark: {
+          "primary": "hsl(217 92% 67%)",
+          "secondary": "hsl(223 13% 22%)",
+          "accent": "hsl(223 14% 23%)",
+          "neutral": "hsl(216 24% 88%)",
+          "base-100": "hsl(225 13% 12%)",
+          "info": "hsl(217 92% 67%)",
+          "success": "hsl(142 45% 50%)",
+          "warning": "hsl(40 72% 58%)",
+          "error": "hsl(356 74% 66%)",
+        },
+      },
+    ],
+    darkTheme: "dark",
+    base: true,
+    utils: true,
+    logs: false,
+    themeRoot: ":root",
+  },
 };

@@ -186,8 +186,8 @@ export function EnvHighlightInput({
   }, []);
 
   const finalInputClass = cn(
-    "flex h-10 w-full border border-border/40 bg-accent/20 px-2.5 py-2 text-[13px] font-mono shadow-inner outline-none transition-colors",
-    "focus-visible:border-primary/50 focus-visible:ring-1 focus-visible:ring-primary/20",
+    "input input-bordered h-10 w-full bg-accent/20 px-2.5 py-2 text-[13px] font-mono shadow-inner outline-none transition-all",
+    "focus:ring-1 focus:ring-primary/20 focus:border-primary/50",
     "placeholder:text-muted-foreground/50",
     "[&::-ms-reveal]:hidden [&::-webkit-contacts-auto-fill-button]:hidden [&::-webkit-credentials-auto-fill-button]:hidden",
     hasVars && !isPassword && "text-transparent caret-foreground",

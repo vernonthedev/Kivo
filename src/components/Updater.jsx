@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { getVersion } from "@tauri-apps/api/app";
-import { Info, RefreshCw, X, AlertCircle, CheckCircle2 } from "lucide-react";
+import { InformationCircleIcon, RefreshIcon, Cancel01Icon, AlertCircleIcon, CheckmarkCircle01Icon } from "hugeicons-react";
 
 import { Button } from "@/components/ui/button.jsx";
 
@@ -102,7 +102,7 @@ export function Updater() {
   if (status === "checking") {
     return (
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-sm border border-border/45 bg-card/95 px-4 py-3 shadow-xl backdrop-blur-md animate-in slide-in-from-bottom-5">
-        <RefreshCw className="h-4 w-4 text-primary animate-spin" />
+        <RefreshIcon className="h-4 w-4 text-primary animate-spin" />
         <span className="text-[13px] font-medium">Checking for updates...</span>
       </div>
     );
@@ -113,13 +113,13 @@ export function Updater() {
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-2.5 mt-0.5">
           {status === "downloading" ? (
-            <RefreshCw className="h-4 w-4 text-teal-500 animate-spin shrink-0 mt-0.5" />
+            <RefreshIcon className="h-4 w-4 text-teal-500 animate-spin shrink-0 mt-0.5" />
           ) : status === "error" ? (
-            <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+            <AlertCircleIcon className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
           ) : status === "up-to-date" ? (
-            <CheckCircle2 className="h-4 w-4 text-teal-500 shrink-0 mt-0.5" />
+            <CheckmarkCircle01Icon className="h-4 w-4 text-teal-500 shrink-0 mt-0.5" />
           ) : (
-            <Info className="h-4 w-4 text-teal-500 shrink-0 mt-0.5" />
+            <InformationCircleIcon className="h-4 w-4 text-teal-500 shrink-0 mt-0.5" />
           )}
 
           <span className="text-[13px] leading-relaxed text-foreground/90 font-medium tracking-wide">
@@ -132,7 +132,7 @@ export function Updater() {
 
         {status !== "downloading" && (
           <button onClick={() => setShowToast(false)} className="shrink-0 text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none">
-            <X className="h-4 w-4" />
+            <Cancel01Icon className="h-4 w-4" />
           </button>
         )}
       </div>

@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { X } from "lucide-react";
+import { Cancel01Icon } from "hugeicons-react";
 import { Button } from "@/components/ui/button.jsx";
-import { Card } from "@/components/ui/card.jsx";
 import { Input } from "@/components/ui/input.jsx";
 import { cn } from "@/lib/utils.js";
 
@@ -19,12 +18,12 @@ export function WorkspaceModal({ initialValues, title, submitLabel, onSubmit, on
   }
 
   return createPortal(
-    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-background/80 backdrop-blur-sm p-6" onMouseDown={(e) => e.target === e.currentTarget && onCancel()}>
-      <Card className="w-full max-w-md border border-border/50 bg-card/95 p-6 shadow-2xl">
+    <div className="modal modal-open bg-black/40 backdrop-blur-sm" onMouseDown={(e) => e.target === e.currentTarget && onCancel()}>
+      <div className="modal-box relative border border-border/50 bg-base-100 p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg font-semibold text-foreground">{title}</h2>
-          <button onClick={onCancel} className="p-1 text-muted-foreground hover:text-foreground transition-colors">
-            <X className="h-5 w-5" />
+          <button onClick={onCancel} className="btn btn-ghost btn-sm btn-circle text-muted-foreground hover:text-foreground transition-colors">
+            <Cancel01Icon className="h-5 w-5" />
           </button>
         </div>
 
@@ -55,7 +54,7 @@ export function WorkspaceModal({ initialValues, title, submitLabel, onSubmit, on
             />
           </div>
 
-          <div className="flex items-center justify-end gap-3 mt-6">
+          <div className="modal-action flex items-center justify-end gap-3 mt-6">
             <Button type="button" variant="ghost" className="h-10 px-6" onClick={onCancel}>
               Cancel
             </Button>
@@ -64,7 +63,7 @@ export function WorkspaceModal({ initialValues, title, submitLabel, onSubmit, on
             </Button>
           </div>
         </form>
-      </Card>
+      </div>
     </div>,
     document.body
   );

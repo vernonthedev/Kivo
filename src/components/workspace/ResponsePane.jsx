@@ -1,4 +1,4 @@
-import { BadgeCheck, Clock3, Cookie, FileJson2, ListTree, Search, X } from "lucide-react";
+import { CheckmarkBadge01Icon, Clock01Icon, CookieIcon, File01Icon, HierarchyIcon, Search01Icon, Cancel01Icon } from "hugeicons-react";
 import { useState, useMemo, useEffect } from "react";
 
 import { CodeEditor } from "@/components/workspace/CodeEditor.jsx";
@@ -93,7 +93,7 @@ export function ResponsePane({ response, activeTab, onTabChange, bodyView, onBod
       <div className="flex items-center justify-between border-b border-border/25 px-3 py-2 text-[11px] text-muted-foreground lg:py-2.5 lg:text-[12px]">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <Clock3 className="h-3 w-3 lg:h-3.5 lg:w-3.5" />
+            <Clock01Icon className="h-3 w-3 lg:h-3.5 lg:w-3.5" />
             <span>{response.duration}</span>
           </div>
           <div className="text-foreground">{response.size}</div>
@@ -106,7 +106,7 @@ export function ResponsePane({ response, activeTab, onTabChange, bodyView, onBod
             tone === "muted" && "status-muted"
           )}
         >
-          <BadgeCheck className="h-3 w-3 lg:h-3.5 lg:w-3.5" />
+          <CheckmarkBadge01Icon className="h-3 w-3 lg:h-3.5 lg:w-3.5" />
           <span>{response.badge}</span>
         </div>
       </div>
@@ -134,12 +134,12 @@ export function ResponsePane({ response, activeTab, onTabChange, bodyView, onBod
             <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-1.5">
-                  <FileJson2 className="h-3 w-3" />
+                  <File01Icon className="h-3 w-3" />
                   <span>Body</span>
                 </div>
                 {currentView === "Tree" && (
                   <div className="flex items-center gap-1.5 border border-border/20 rounded pl-2.5 pr-1.5 py-[3px] w-48 bg-background/30 transition-colors focus-within:border-primary/50 shadow-sm ml-2 normal-case tracking-normal">
-                    <Search className="h-[11px] w-[11px] text-muted-foreground shrink-0" />
+                    <Search01Icon className="h-[11px] w-[11px] text-muted-foreground shrink-0" />
                     <input
                       type="text"
                       placeholder="e.g. age > 20 && status == active"
@@ -149,7 +149,7 @@ export function ResponsePane({ response, activeTab, onTabChange, bodyView, onBod
                     />
                     {inputValue && (
                       <button onClick={() => setInputValue("")} className="text-muted-foreground hover:text-foreground shrink-0 focus:outline-none">
-                        <X className="h-[11px] w-[11px]" />
+                        <Cancel01Icon className="h-[11px] w-[11px]" />
                       </button>
                     )}
                   </div>
@@ -186,7 +186,7 @@ export function ResponsePane({ response, activeTab, onTabChange, bodyView, onBod
                   </div>
                 ) : (
                   <div className="flex h-full flex-col items-center justify-center text-muted-foreground/70">
-                    <Search className="h-8 w-8 mb-2 opacity-20" />
+                    <Search01Icon className="h-8 w-8 mb-2 opacity-20" />
                     <span className="text-[12px]">No matching keys or values found</span>
                   </div>
                 )}
@@ -233,7 +233,7 @@ export function ResponsePane({ response, activeTab, onTabChange, bodyView, onBod
         {activeTab === "Cookies" ? (
           <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-3">
             <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-              <Cookie className="h-3 w-3" />
+              <CookieIcon className="h-3 w-3" />
               <span>Cookies</span>
             </div>
             <div className="thin-scrollbar min-h-0 overflow-auto bg-background/20 p-3 text-[12px] text-foreground">
@@ -245,7 +245,7 @@ export function ResponsePane({ response, activeTab, onTabChange, bodyView, onBod
         {activeTab === "Meta" ? (
           <div className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] gap-3">
             <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-              <ListTree className="h-3 w-3" />
+              <HierarchyIcon className="h-3 w-3" />
               <span>Meta</span>
             </div>
             <div className="bg-background/20 p-3 text-[12px] text-muted-foreground">

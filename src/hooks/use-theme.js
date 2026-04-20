@@ -19,6 +19,7 @@ export function useTheme() {
   useEffect(() => {
     document.documentElement.classList.remove("theme-light", "theme-dark");
     document.documentElement.classList.add(`theme-${theme}`);
+    document.documentElement.setAttribute("data-theme", theme);
     window.localStorage.setItem(storageKey, theme);
   }, [theme]);
 

@@ -1,4 +1,4 @@
-import { MoonStar, SunMedium } from "lucide-react";
+import { Moon02Icon, Sun01Icon } from "hugeicons-react";
 
 import { Button } from "@/components/ui/button.jsx";
 
@@ -13,7 +13,7 @@ export function ThemeToggle({ theme, onToggle }) {
       onClick={onToggle}
       type="button"
     >
-      {isDark ? <MoonStar className="h-3.5 w-3.5" /> : <SunMedium className="h-3.5 w-3.5" />}
+      {isDark ? <Moon02Icon className="h-3.5 w-3.5" /> : <Sun01Icon className="h-3.5 w-3.5" />}
       <span className="leading-none">{isDark ? "Dark" : "Light"}</span>
     </Button>
   );

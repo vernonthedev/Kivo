@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FolderOpen, Settings, CheckCircle2, ArrowRight } from "lucide-react";
+import { FolderOpenIcon, Settings01Icon, CheckmarkCircle01Icon, ArrowRight01Icon } from "hugeicons-react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "@/components/ui/button.jsx";
@@ -83,7 +83,7 @@ export function SetupWizard({ onComplete }) {
       <Card className="w-full max-w-lg border-border/40 bg-card/95 p-8 shadow-2xl">
         <div className="flex flex-col items-center text-center">
           <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-            <Settings className="h-8 w-8 animate-spin-slow" />
+            <Settings01Icon className="h-8 w-8 animate-spin-slow" />
           </div>
 
           <h1 className="mb-2 text-2xl font-bold tracking-tight text-foreground lg:text-3xl">
@@ -112,7 +112,7 @@ export function SetupWizard({ onComplete }) {
                   className="h-11 w-11 shrink-0 border-border/40 bg-card/50"
                   onClick={handleBrowse}
                 >
-                  <FolderOpen className="h-5 w-5" />
+                  <FolderOpenIcon className="h-5 w-5" />
                 </Button>
               </div>
 
@@ -160,12 +160,12 @@ export function SetupWizard({ onComplete }) {
               disabled={isSubmitting || !resolvedPath}
             >
               {isSubmitting ? "Setting up..." : "Complete Setup"}
-              <CheckCircle2 className="h-5 w-5" />
+              <CheckmarkCircle01Icon className="h-5 w-5" />
             </Button>
 
             <div className="flex items-center justify-center gap-2 text-[12px] text-muted-foreground">
               <span>You can change this later in settings</span>
-              <ArrowRight className="h-3 w-3" />
+              <ArrowRight01Icon className="h-3 w-3" />
             </div>
           </div>
         </div>
